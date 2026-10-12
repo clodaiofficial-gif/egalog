@@ -1,0 +1,660 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#14263F">
+  <title>えがログ｜お店データベース</title>
+  <style>
+    :root {
+      --navy: #14263F;
+      --navy-light: #203955;
+      --blue: #456A91;
+      --lime: #B5DE45;
+      --bg: #F2F4F7;
+      --line: #D9DEE6;
+      --text: #202B39;
+      --muted: #687586;
+      --white: #FFFFFF;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+      line-height: 1.6;
+    }
+
+    button { font: inherit; cursor: pointer; }
+
+    .site-header {
+      background: var(--navy);
+      color: white;
+      border-bottom: 3px solid var(--lime);
+    }
+
+    .header-inner {
+      max-width: 1080px;
+      margin: auto;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      color: white;
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: 1px;
+      color: #C4CFDC;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .12em;
+    }
+
+    .register-button {
+      border: 1px solid var(--lime);
+      border-radius: 5px;
+      padding: 10px 15px;
+      background: var(--lime);
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    main {
+      width: min(100% - 32px, 920px);
+      margin: 30px auto 60px;
+    }
+
+    .intro {
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      margin: 0 0 5px;
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .16em;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(25px, 5vw, 34px);
+      letter-spacing: .02em;
+    }
+
+    .intro p:last-child {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .panel {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--white);
+      box-shadow: 0 3px 12px #14263F0A;
+    }
+
+    .panel-heading {
+      padding: 17px 20px;
+      background: var(--navy);
+      color: white;
+    }
+
+    .panel-heading h2 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 750;
+    }
+
+    .panel-heading p {
+      margin: 3px 0 0;
+      color: #D1DAE5;
+      font-size: 12px;
+    }
+
+    .filter-list { padding: 8px 18px 0; }
+
+    .filter-category {
+      border-bottom: 1px solid #E7EAF0;
+    }
+
+    .category-toggle {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 2px;
+      border: 0;
+      background: transparent;
+      color: var(--navy);
+      text-align: left;
+    }
+
+    .category-icon {
+      display: grid;
+      width: 39px;
+      height: 39px;
+      flex: 0 0 39px;
+      place-items: center;
+      border: 1px solid #DDE4EC;
+      border-radius: 6px;
+      background: #F4F7FA;
+      font-size: 19px;
+    }
+
+    .category-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .category-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .category-summary {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .category-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+    }
+
+    .selected-count {
+      display: none;
+      min-width: 22px;
+      padding: 1px 6px;
+      border-radius: 12px;
+      background: var(--navy);
+      color: white;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .selected-count.visible { display: inline-block; }
+
+    .chevron {
+      font-size: 18px;
+      transition: transform .15s ease;
+    }
+
+    .category-toggle[aria-expanded="true"] .chevron {
+      transform: rotate(180deg);
+    }
+
+    .tag-area {
+      display: none;
+      padding: 0 2px 17px 51px;
+    }
+
+    .tag-area.open { display: block; }
+
+    .area-group-title {
+      margin: 0 0 7px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .area-group-title:not(:first-child) { margin-top: 15px; }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      min-height: 36px;
+      padding: 7px 12px;
+      border: 1px solid #CDD5E0;
+      border-radius: 5px;
+      background: white;
+      color: #334155;
+      font-size: 12px;
+      transition: background .12s, color .12s, border-color .12s;
+    }
+
+    .tag[aria-pressed="true"] {
+      border-color: var(--navy);
+      background: var(--navy);
+      color: white;
+    }
+
+    .filter-footer {
+      padding: 18px 20px 20px;
+      background: #F8F9FB;
+    }
+
+    .selection-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .clear-button {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      text-decoration: underline;
+    }
+
+    .search-button {
+      width: 100%;
+      min-height: 49px;
+      border: 0;
+      border-radius: 5px;
+      background: var(--lime);
+      color: var(--navy);
+      font-size: 15px;
+      font-weight: 850;
+    }
+
+    .search-button:hover,
+    .register-button:hover { filter: brightness(.96); }
+
+    .results {
+      margin-top: 28px;
+      scroll-margin-top: 20px;
+    }
+
+    .results-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .results-heading h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 19px;
+    }
+
+    .results-count {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .empty-state {
+      padding: 35px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .empty-icon {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 27px;
+    }
+
+    .empty-state strong {
+      display: block;
+      color: var(--navy);
+      font-size: 15px;
+    }
+
+    .empty-state p {
+      margin: 5px 0 0;
+      font-size: 12px;
+    }
+
+    .site-footer {
+      padding: 23px 16px;
+      background: var(--navy);
+      color: #C4CFDC;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .notice {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    @media (min-width: 650px) {
+      .filter-list { padding-right: 24px; padding-left: 24px; }
+      .category-toggle { padding: 18px 2px; }
+      .tag { font-size: 13px; }
+      .filter-footer { padding-right: 24px; padding-left: 24px; }
+    }
+
+    @media (max-width: 420px) {
+      .header-inner { padding: 12px 14px; gap: 8px; }
+      .brand { font-size: 22px; }
+      .register-button { padding: 9px 10px; font-size: 12px; }
+      main { width: calc(100% - 24px); margin-top: 24px; }
+      .filter-list { padding-right: 12px; padding-left: 12px; }
+      .tag-area { padding-left: 4px; }
+      .panel-heading { padding: 15px; }
+      .filter-footer { padding: 16px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./" aria-label="えがログ トップ">
+        えがログ
+        <small>RESTAURANT DATABASE</small>
+      </a>
+      <button class="register-button" id="registerButton" type="button">
+        ＋ お店を登録する
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p class="eyebrow">FIND YOUR RESTAURANT</p>
+      <h1>お店を探す</h1>
+      <p>ジャンルやエリア、人数などの条件からお店を探せます。</p>
+    </section>
+
+    <section class="panel" aria-labelledby="filterHeading">
+      <div class="panel-heading">
+        <h2 id="filterHeading">条件を絞る</h2>
+        <p>気になる条件を選んで「検索」を押してください。</p>
+      </div>
+
+      <div class="filter-list" id="filterList"></div>
+
+      <div class="filter-footer">
+        <div class="selection-line">
+          <span id="selectionSummary">条件は選択されていません</span>
+          <button class="clear-button" id="clearButton" type="button">
+            すべて解除
+          </button>
+        </div>
+        <button class="search-button" id="searchButton" type="button">
+          この条件で検索
+        </button>
+      </div>
+    </section>
+
+    <section class="results" id="results" aria-live="polite" hidden>
+      <div class="results-heading">
+        <h2>検索結果</h2>
+        <span class="results-count" id="resultsCount"></span>
+      </div>
+      <div class="empty-state">
+        <span class="empty-icon" aria-hidden="true">⌕</span>
+        <strong>該当するお店がありません</strong>
+      </div>
+    </section>
+
+    <p class="notice">
+      お店の情報は、仲間内で共有するためのデータベースです。
+    </p>
+  </main>
+
+  <footer class="site-footer">
+    えがログ｜お店データベース
+  </footer>
+
+  <script>
+    const categories = [
+      {
+        id: "genre",
+        icon: "🍴",
+        title: "ジャンル",
+        summary: "料理の種類から探す",
+        options: [
+          "うどん", "ラーメン", "居酒屋", "焼肉", "寿司", "和食",
+          "洋食", "中華", "カレー", "定食", "カフェ", "その他"
+        ]
+      },
+      {
+        id: "area",
+        icon: "📍",
+        title: "エリア",
+        summary: "熊本市・熊本県内の地域から探す",
+        groups: [
+          {
+            title: "熊本市",
+            options: ["街", "中央区", "北区", "南区", "西区", "東区"]
+          },
+          {
+            title: "熊本県内",
+            options: ["県北", "北東部", "阿蘇", "県南", "球磨人吉", "天草"]
+          }
+        ]
+      },
+      {
+        id: "size",
+        icon: "👥",
+        title: "人数・規模",
+        summary: "少人数から宴会まで",
+        options: [
+          "1～2人向け", "～5人", "6～10人", "大人数・宴会ok"
+        ]
+      },
+      {
+        id: "conditions",
+        icon: "🏠",
+        title: "設備・店舗条件",
+        summary: "個室・駐車場・予約など",
+        groups: [
+          { title: "個室", options: ["個室：あり", "個室：なし"] },
+          { title: "駐車場", options: ["駐車場：あり", "駐車場：なし"] },
+          {
+            title: "予約",
+            options: ["予約：可", "予約：したほうがいい", "予約：不可"]
+          },
+          { title: "貸切", options: ["貸切：あり", "貸切：なし"] },
+          {
+            title: "飲み放題",
+            options: ["飲み放題：あり", "飲み放題：なし"]
+          },
+          {
+            title: "喫煙",
+            options: ["喫煙：喫煙可", "喫煙：禁煙", "喫煙：不明"]
+          }
+        ]
+      },
+      {
+        id: "atmosphere",
+        icon: "🎨",
+        title: "雰囲気",
+        summary: "お店の雰囲気から探す",
+        options: ["静か", "高級感・おしゃれ", "わいわい", "大衆・家族"]
+      }
+    ];
+
+    const selected = new Set();
+    let lastSearch = new Set();
+
+    function makeTag(option) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "tag";
+      button.textContent = option;
+      button.setAttribute("aria-pressed", "false");
+
+      button.addEventListener("click", () => {
+        if (selected.has(option)) {
+          selected.delete(option);
+        } else {
+          selected.add(option);
+        }
+        updateTagStates();
+        updateSummary();
+      });
+
+      return button;
+    }
+
+    function makeOptionGroup(options, title = "") {
+      const group = document.createElement("div");
+
+      if (title) {
+        const heading = document.createElement("p");
+        heading.className = "area-group-title";
+        heading.textContent = title;
+        group.appendChild(heading);
+      }
+
+      const tags = document.createElement("div");
+      tags.className = "tag-list";
+
+      options.forEach(option => tags.appendChild(makeTag(option)));
+      group.appendChild(tags);
+      return group;
+    }
+
+    function renderCategories() {
+      const root = document.getElementById("filterList");
+
+      categories.forEach(category => {
+        const section = document.createElement("section");
+        section.className = "filter-category";
+
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "category-toggle";
+        toggle.setAttribute("aria-expanded", "false");
+
+        const icon = document.createElement("span");
+        icon.className = "category-icon";
+        icon.textContent = category.icon;
+        icon.setAttribute("aria-hidden", "true");
+
+        const copy = document.createElement("span");
+        copy.className = "category-copy";
+
+        const title = document.createElement("span");
+        title.className = "category-title";
+        title.textContent = category.title;
+
+        const summary = document.createElement("span");
+        summary.className = "category-summary";
+        summary.textContent = category.summary;
+
+        copy.append(title, summary);
+
+        const right = document.createElement("span");
+        right.className = "category-right";
+
+        const count = document.createElement("span");
+        count.className = "selected-count";
+        count.dataset.countFor = category.id;
+
+        const chevron = document.createElement("span");
+        chevron.className = "chevron";
+        chevron.textContent = "⌄";
+        chevron.setAttribute("aria-hidden", "true");
+
+        right.append(count, chevron);
+        toggle.append(icon, copy, right);
+
+        const area = document.createElement("div");
+        area.className = "tag-area";
+        area.dataset.category = category.id;
+
+        if (category.groups) {
+          category.groups.forEach(group => {
+            area.appendChild(makeOptionGroup(group.options, group.title));
+          });
+        } else {
+          area.appendChild(makeOptionGroup(category.options));
+        }
+
+        toggle.addEventListener("click", () => {
+          const isOpen = area.classList.toggle("open");
+          toggle.setAttribute("aria-expanded", String(isOpen));
+        });
+
+        section.append(toggle, area);
+        root.appendChild(section);
+      });
+    }
+
+    function updateTagStates() {
+      document.querySelectorAll(".tag").forEach(button => {
+        const isSelected = selected.has(button.textContent);
+        button.setAttribute("aria-pressed", String(isSelected));
+      });
+
+      categories.forEach(category => {
+        const options = category.groups
+          ? category.groups.flatMap(group => group.options)
+          : category.options;
+
+        const count = options.filter(option => selected.has(option)).length;
+        const badge = document.querySelector(
+          `[data-count-for="${category.id}"]`
+        );
+
+        badge.textContent = count;
+        badge.classList.toggle("visible", count > 0);
+      });
+    }
+
+    function updateSummary() {
+      const count = selected.size;
+      document.getElementById("selectionSummary").textContent =
+        count === 0
+          ? "条件は選択されていません"
+          : `${count}個の条件を選択中`;
+    }
+
+    document.getElementById("clearButton").addEventListener("click", () => {
+      selected.clear();
+      updateTagStates();
+      updateSummary();
+    });
+
+    document.getElementById("searchButton").addEventListener("click", () => {
+      lastSearch = new Set(selected);
+      const results = document.getElementById("results");
+      results.hidden = false;
+      document.getElementById("resultsCount").textContent = "0件";
+      results.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    document.getElementById("registerButton").addEventListener("click", () => {
+      alert("お店の登録フォームは、次の制作段階で追加します。");
+    });
+
+    renderCategories();
+  </script>
+</body>
+</html>

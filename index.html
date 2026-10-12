@@ -8,16 +8,17 @@
   <title>えがログ｜お店データベース</title>
   <style>
     :root {
-      --navy: #14263F;
-      --navy-light: #203955;
-      --blue: #456A91;
-      --lime: #B5DE45;
-      --bg: #F2F4F7;
-      --line: #D9DEE6;
-      --text: #202B39;
-      --muted: #687586;
-      --white: #FFFFFF;
-    }
+  --navy: #14263F;
+  --navy-light: #203955;
+  --blue: #456A91;
+  --lime: #B5DE45;
+  --rose: #D95D72;
+  --bg: #F2F4F7;
+  --line: #D9DEE6;
+  --text: #202B39;
+  --muted: #687586;
+  --white: #FFFFFF;
+  }
 
     * { box-sizing: border-box; }
 
@@ -33,9 +34,11 @@
     button { font: inherit; cursor: pointer; }
 
     .site-header {
-      background: var(--navy);
+      background: linear-gradient(115deg, #101F35 0%, #14263F 62%, #203955 100%);
       color: white;
       border-bottom: 3px solid var(--lime);
+      box-shadow: 0 4px 14px #14263F1A;
+      position: relative;
     }
 
     .header-inner {
@@ -67,15 +70,40 @@
     }
 
     .register-button {
-      border: 1px solid var(--lime);
-      border-radius: 5px;
-      padding: 10px 15px;
-      background: var(--lime);
-      color: var(--navy);
-      font-size: 13px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--rose);
+  border-radius: 6px;
+  padding: 11px 17px;
+  background: var(--rose);
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  box-shadow: 0 3px 0 #8F3548;
+  transition: transform .15s ease, box-shadow .15s ease,
+    filter .15s ease;
+}
+
+.register-button:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 #8F3548;
+}
+
+.register-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #8F3548;
+}
+
+.register-button:focus-visible {
+  outline: 3px solid var(--lime);
+  outline-offset: 3px;
+}
 
     main {
       width: min(100% - 32px, 920px);
@@ -211,9 +239,23 @@
     }
 
     .tag-area {
-      display: none;
-      padding: 0 2px 17px 51px;
+      display: grid;
+      grid-template-rows: 0fr;
+      padding: 0 2px 0 51px;
+      opacity: 0;
+      transition: opacity .18s ease, padding .18s ease;
     }
+
+.tag-area > * {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tag-area.open {
+  display: block;
+  padding: 0 2px 17px 51px;
+  opacity: 1;
+}
 
     .tag-area.open { display: block; }
 

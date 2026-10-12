@@ -5,22 +5,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#14263F">
+  <meta name="robots" content="noindex, nofollow">
   <title>えがログ｜お店データベース</title>
+
   <style>
     :root {
-  --navy: #14263F;
-  --navy-light: #203955;
-  --blue: #456A91;
-  --lime: #B5DE45;
-  --rose: #D95D72;
-  --bg: #F2F4F7;
-  --line: #D9DEE6;
-  --text: #202B39;
-  --muted: #687586;
-  --white: #FFFFFF;
-  }
+      --navy: #14263F;
+      --navy-light: #203955;
+      --blue: #456A91;
+      --lime: #B5DE45;
+      --rose: #D95D72;
+      --bg: #F2F4F7;
+      --line: #D9DEE6;
+      --text: #202B39;
+      --muted: #687586;
+      --white: #FFFFFF;
+      --radius: 8px;
+    }
 
     * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       margin: 0;
@@ -31,20 +38,33 @@
       line-height: 1.6;
     }
 
-    button { font: inherit; cursor: pointer; }
+    button {
+      font: inherit;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 3px solid var(--rose);
+      outline-offset: 3px;
+    }
 
     .site-header {
-      background: linear-gradient(115deg, #101F35 0%, #14263F 62%, #203955 100%);
+      position: relative;
+      background: linear-gradient(
+        115deg, #101F35 0%, #14263F 62%, #203955 100%
+      );
       color: white;
       border-bottom: 3px solid var(--lime);
-      box-shadow: 0 4px 14px #14263F1A;
-      position: relative;
+      box-shadow: 0 4px 16px #14263F20;
     }
 
     .header-inner {
       max-width: 1080px;
+      min-height: 82px;
       margin: auto;
-      padding: 15px 20px;
+      padding: 13px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -52,143 +72,174 @@
     }
 
     .brand {
+      display: inline-block;
       color: white;
-      font-size: 25px;
-      font-weight: 800;
-      letter-spacing: .06em;
+      font-size: 26px;
+      font-weight: 850;
+      letter-spacing: .07em;
+      line-height: 1.2;
       text-decoration: none;
       white-space: nowrap;
     }
 
     .brand small {
       display: block;
-      margin-top: 1px;
+      margin-top: 5px;
       color: #C4CFDC;
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: .12em;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: .19em;
     }
 
     .register-button {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: 1px solid var(--rose);
-  border-radius: 6px;
-  padding: 11px 17px;
-  background: var(--rose);
-  color: #FFFFFF;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: .02em;
-  white-space: nowrap;
-  box-shadow: 0 3px 0 #8F3548;
-  transition: transform .15s ease, box-shadow .15s ease,
-    filter .15s ease;
-}
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid var(--lime);
+      border-radius: 6px;
+      background: var(--lime);
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 850;
+      letter-spacing: .015em;
+      white-space: nowrap;
+      box-shadow: 0 3px 0 #829F2F;
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
 
-.register-button:hover {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 0 #8F3548;
-}
+    .register-button .plus {
+      font-size: 19px;
+      font-weight: 500;
+      line-height: 1;
+    }
 
-.register-button:active {
-  transform: translateY(2px);
-  box-shadow: 0 1px 0 #8F3548;
-}
+    .register-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 0 #829F2F;
+    }
 
-.register-button:focus-visible {
-  outline: 3px solid var(--lime);
-  outline-offset: 3px;
-}
+    .register-button:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #829F2F;
+    }
 
     main {
       width: min(100% - 32px, 920px);
-      margin: 30px auto 60px;
+      margin: 32px auto 56px;
     }
 
     .intro {
+      position: relative;
       margin-bottom: 24px;
+      padding: 3px 0 4px 15px;
+      border-left: 3px solid var(--lime);
     }
 
     .eyebrow {
       margin: 0 0 5px;
       color: var(--blue);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .16em;
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: .19em;
     }
 
     h1 {
       margin: 0;
       color: var(--navy);
-      font-size: clamp(25px, 5vw, 34px);
-      letter-spacing: .02em;
+      font-size: clamp(27px, 5vw, 35px);
+      font-weight: 850;
+      letter-spacing: .025em;
+      line-height: 1.35;
     }
 
-    .intro p:last-child {
-      margin: 7px 0 0;
+    .intro-description {
+      margin: 8px 0 0;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .panel {
       overflow: hidden;
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: var(--radius);
       background: var(--white);
-      box-shadow: 0 3px 12px #14263F0A;
+      box-shadow: 0 5px 20px #14263F0A;
     }
 
     .panel-heading {
-      padding: 17px 20px;
+      position: relative;
+      padding: 18px 20px;
       background: var(--navy);
       color: white;
+    }
+
+    .panel-heading::after {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 58px;
+      height: 3px;
+      background: var(--lime);
+      content: "";
     }
 
     .panel-heading h2 {
       margin: 0;
       font-size: 17px;
-      font-weight: 750;
+      font-weight: 800;
+      letter-spacing: .025em;
     }
 
     .panel-heading p {
-      margin: 3px 0 0;
+      margin: 4px 0 0;
       color: #D1DAE5;
       font-size: 12px;
     }
 
-    .filter-list { padding: 8px 18px 0; }
+    .filter-list {
+      padding: 5px 20px 0;
+    }
 
     .filter-category {
       border-bottom: 1px solid #E7EAF0;
     }
 
+    .filter-category:last-child {
+      border-bottom: 0;
+    }
+
     .category-toggle {
       display: flex;
       width: 100%;
+      min-height: 73px;
       align-items: center;
       gap: 12px;
-      padding: 16px 2px;
+      padding: 14px 2px;
       border: 0;
       background: transparent;
       color: var(--navy);
       text-align: left;
     }
 
+    .category-toggle:hover .category-icon {
+      border-color: #B7C6D7;
+      background: #EDF2F7;
+    }
+
     .category-icon {
       display: grid;
-      width: 39px;
-      height: 39px;
-      flex: 0 0 39px;
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
       place-items: center;
       border: 1px solid #DDE4EC;
-      border-radius: 6px;
+      border-radius: 7px;
       background: #F4F7FA;
       font-size: 19px;
+      transition: background .15s ease, border-color .15s ease;
     }
 
     .category-copy {
@@ -199,7 +250,7 @@
     .category-title {
       display: block;
       font-size: 14px;
-      font-weight: 750;
+      font-weight: 800;
     }
 
     .category-summary {
@@ -212,7 +263,7 @@
     .category-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
       color: var(--muted);
     }
 
@@ -221,52 +272,56 @@
       min-width: 22px;
       padding: 1px 6px;
       border-radius: 12px;
-      background: var(--navy);
+      background: var(--rose);
       color: white;
       font-size: 11px;
+      font-weight: 800;
       text-align: center;
     }
 
-    .selected-count.visible { display: inline-block; }
+    .selected-count.visible {
+      display: inline-block;
+    }
 
     .chevron {
-      font-size: 18px;
-      transition: transform .15s ease;
+      display: inline-block;
+      color: var(--blue);
+      font-size: 19px;
+      line-height: 1;
+      transition: transform .18s ease;
     }
 
     .category-toggle[aria-expanded="true"] .chevron {
       transform: rotate(180deg);
     }
 
+    /* 開閉は display で確実に制御し、表示崩れを防ぐ */
     .tag-area {
-      display: grid;
-      grid-template-rows: 0fr;
-      padding: 0 2px 0 51px;
-      opacity: 0;
-      transition: opacity .18s ease, padding .18s ease;
+      display: none;
+      padding: 0 2px 18px 54px;
     }
 
-.tag-area > * {
-  min-height: 0;
-  overflow: hidden;
-}
+    .tag-area.open {
+      display: block;
+      animation: reveal .16s ease-out;
+    }
 
-.tag-area.open {
-  display: block;
-  padding: 0 2px 17px 51px;
-  opacity: 1;
-}
-
-    .tag-area.open { display: block; }
+    @keyframes reveal {
+      from { opacity: .65; }
+      to { opacity: 1; }
+    }
 
     .area-group-title {
-      margin: 0 0 7px;
+      margin: 0 0 8px;
       color: var(--muted);
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 800;
+      letter-spacing: .04em;
     }
 
-    .area-group-title:not(:first-child) { margin-top: 15px; }
+    .area-group-title:not(:first-child) {
+      margin-top: 16px;
+    }
 
     .tag-list {
       display: flex;
@@ -275,14 +330,20 @@
     }
 
     .tag {
-      min-height: 36px;
+      min-height: 37px;
       padding: 7px 12px;
       border: 1px solid #CDD5E0;
       border-radius: 5px;
       background: white;
       color: #334155;
       font-size: 12px;
-      transition: background .12s, color .12s, border-color .12s;
+      font-weight: 550;
+      transition: background .12s ease, color .12s ease,
+        border-color .12s ease;
+    }
+
+    .tag:hover {
+      border-color: var(--blue);
     }
 
     .tag[aria-pressed="true"] {
@@ -293,43 +354,62 @@
 
     .filter-footer {
       padding: 18px 20px 20px;
+      border-top: 1px solid #E7EAF0;
       background: #F8F9FB;
     }
 
     .selection-line {
       display: flex;
+      align-items: center;
       justify-content: space-between;
       gap: 10px;
-      margin-bottom: 12px;
+      margin-bottom: 13px;
       color: var(--muted);
       font-size: 12px;
     }
 
     .clear-button {
-      padding: 0;
+      padding: 3px 0 3px 8px;
       border: 0;
       background: transparent;
       color: var(--blue);
+      font-size: 12px;
       text-decoration: underline;
+      text-underline-offset: 3px;
     }
 
     .search-button {
+      display: block;
       width: 100%;
-      min-height: 49px;
-      border: 0;
+      min-height: 50px;
+      border: 1px solid var(--lime);
       border-radius: 5px;
       background: var(--lime);
       color: var(--navy);
       font-size: 15px;
       font-weight: 850;
+      letter-spacing: .025em;
+      box-shadow: 0 3px 0 #829F2F;
+      transition: transform .15s ease, box-shadow .15s ease;
     }
 
-    .search-button:hover,
-    .register-button:hover { filter: brightness(.96); }
+    .search-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 0 #829F2F;
+    }
+
+    .search-button:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #829F2F;
+    }
 
     .results {
-      margin-top: 28px;
+      margin-top: 30px;
       scroll-margin-top: 20px;
+    }
+
+    .results[hidden] {
+      display: none;
     }
 
     .results-heading {
@@ -338,12 +418,15 @@
       justify-content: space-between;
       gap: 10px;
       margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--navy);
     }
 
     .results-heading h2 {
       margin: 0;
       color: var(--navy);
       font-size: 19px;
+      font-weight: 850;
     }
 
     .results-count {
@@ -352,18 +435,19 @@
     }
 
     .empty-state {
-      padding: 35px 16px;
+      padding: 34px 16px;
       border: 1px solid var(--line);
-      border-radius: 8px;
+      border-radius: var(--radius);
       background: white;
-      color: var(--muted);
       text-align: center;
     }
 
     .empty-icon {
       display: block;
       margin-bottom: 8px;
-      font-size: 27px;
+      color: var(--blue);
+      font-size: 29px;
+      line-height: 1.2;
     }
 
     .empty-state strong {
@@ -373,44 +457,137 @@
     }
 
     .empty-state p {
-      margin: 5px 0 0;
+      margin: 6px 0 0;
+      color: var(--muted);
       font-size: 12px;
     }
 
+    .notice {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+
     .site-footer {
-      padding: 23px 16px;
+      padding: 25px 16px;
+      border-top: 3px solid var(--lime);
       background: var(--navy);
       color: #C4CFDC;
       font-size: 11px;
       text-align: center;
     }
 
-    .notice {
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 11px;
-      text-align: center;
+    .footer-brand {
+      margin-bottom: 4px;
+      color: white;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .08em;
     }
 
     @media (min-width: 650px) {
-      .filter-list { padding-right: 24px; padding-left: 24px; }
-      .category-toggle { padding: 18px 2px; }
-      .tag { font-size: 13px; }
-      .filter-footer { padding-right: 24px; padding-left: 24px; }
+      main {
+        margin-top: 38px;
+      }
+
+      .filter-list {
+        padding-right: 26px;
+        padding-left: 26px;
+      }
+
+      .category-toggle {
+        min-height: 78px;
+      }
+
+      .tag {
+        font-size: 13px;
+      }
+
+      .filter-footer {
+        padding-right: 26px;
+        padding-left: 26px;
+      }
     }
 
     @media (max-width: 420px) {
-      .header-inner { padding: 12px 14px; gap: 8px; }
-      .brand { font-size: 22px; }
-      .register-button { padding: 9px 10px; font-size: 12px; }
-      main { width: calc(100% - 24px); margin-top: 24px; }
-      .filter-list { padding-right: 12px; padding-left: 12px; }
-      .tag-area { padding-left: 4px; }
-      .panel-heading { padding: 15px; }
-      .filter-footer { padding: 16px 14px; }
+      .header-inner {
+        min-height: 75px;
+        padding: 11px 13px;
+        gap: 8px;
+      }
+
+      .brand {
+        font-size: 22px;
+      }
+
+      .brand small {
+        font-size: 8px;
+      }
+
+      .register-button {
+        min-height: 42px;
+        gap: 5px;
+        padding: 9px 10px;
+        font-size: 12px;
+      }
+
+      main {
+        width: calc(100% - 24px);
+        margin-top: 25px;
+      }
+
+      .filter-list {
+        padding-right: 13px;
+        padding-left: 13px;
+      }
+
+      .category-toggle {
+        gap: 9px;
+      }
+
+      .category-icon {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+      }
+
+      .category-title {
+        font-size: 13px;
+      }
+
+      .category-summary {
+        font-size: 10px;
+      }
+
+      .tag-area {
+        padding-left: 3px;
+      }
+
+      .panel-heading {
+        padding: 16px;
+      }
+
+      .filter-footer {
+        padding: 16px 14px 18px;
+      }
+
+      .tag {
+        padding-right: 10px;
+        padding-left: 10px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
     }
   </style>
 </head>
+
 <body>
   <header class="site-header">
     <div class="header-inner">
@@ -418,8 +595,10 @@
         えがログ
         <small>RESTAURANT DATABASE</small>
       </a>
+
       <button class="register-button" id="registerButton" type="button">
-        ＋ お店を登録する
+        <span class="plus" aria-hidden="true">＋</span>
+        <span>お店を登録する</span>
       </button>
     </div>
   </header>
@@ -428,7 +607,9 @@
     <section class="intro">
       <p class="eyebrow">FIND YOUR RESTAURANT</p>
       <h1>お店を探す</h1>
-      <p>ジャンルやエリア、人数などの条件からお店を探せます。</p>
+      <p class="intro-description">
+        ジャンルやエリア、人数などの条件からお店を探せます。
+      </p>
     </section>
 
     <section class="panel" aria-labelledby="filterHeading">
@@ -469,7 +650,8 @@
   </main>
 
   <footer class="site-footer">
-    えがログ｜お店データベース
+    <div class="footer-brand">えがログ</div>
+    お店データベース
   </footer>
 
   <script>
@@ -496,7 +678,9 @@
           },
           {
             title: "熊本県内",
-            options: ["県北", "北東部", "阿蘇", "県南", "球磨人吉", "天草"]
+            options: [
+              "県北", "北東部", "阿蘇", "県南", "球磨人吉", "天草"
+            ]
           }
         ]
       },
@@ -519,7 +703,9 @@
           { title: "駐車場", options: ["駐車場：あり", "駐車場：なし"] },
           {
             title: "予約",
-            options: ["予約：可", "予約：したほうがいい", "予約：不可"]
+            options: [
+              "予約：可", "予約：したほうがいい", "予約：不可"
+            ]
           },
           { title: "貸切", options: ["貸切：あり", "貸切：なし"] },
           {
@@ -542,7 +728,6 @@
     ];
 
     const selected = new Set();
-    let lastSearch = new Set();
 
     function makeTag(option) {
       const button = document.createElement("button");
@@ -557,6 +742,7 @@
         } else {
           selected.add(option);
         }
+
         updateTagStates();
         updateSummary();
       });
@@ -577,7 +763,10 @@
       const tags = document.createElement("div");
       tags.className = "tag-list";
 
-      options.forEach(option => tags.appendChild(makeTag(option)));
+      options.forEach(option => {
+        tags.appendChild(makeTag(option));
+      });
+
       group.appendChild(tags);
       return group;
     }
@@ -685,7 +874,6 @@
     });
 
     document.getElementById("searchButton").addEventListener("click", () => {
-      lastSearch = new Set(selected);
       const results = document.getElementById("results");
       results.hidden = false;
       document.getElementById("resultsCount").textContent = "0件";

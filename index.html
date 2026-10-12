@@ -1,890 +1,906 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#14263F">
   <meta name="robots" content="noindex, nofollow">
-  <title>えがログ｜お店データベース</title>
-
+  <meta name="theme-color" content="#101e33">
+  <title>えがログ｜お店を探す</title>
   <style>
     :root {
-      --navy: #14263F;
-      --navy-light: #203955;
-      --blue: #456A91;
-      --lime: #B5DE45;
-      --rose: #D95D72;
-      --bg: #F2F4F7;
-      --line: #D9DEE6;
-      --text: #202B39;
-      --muted: #687586;
-      --white: #FFFFFF;
-      --radius: 8px;
+      --navy: #101e33;
+      --navy-2: #172b46;
+      --navy-3: #233d5d;
+      --blue: #6d8fb8;
+      --lime: #b8e34b;
+      --lime-dark: #9bc62e;
+      --rose: #d95d72;
+      --bg: #f0f3f7;
+      --panel: #ffffff;
+      --line: #d8e0e9;
+      --text: #202b39;
+      --muted: #687789;
+      --soft: #e8edf3;
+      --radius: 10px;
+      --shadow: 0 8px 24px rgba(16, 30, 51, .07);
     }
 
     * { box-sizing: border-box; }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      background: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-        "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
-      line-height: 1.6;
+      background:
+        radial-gradient(circle at 88% 2%, rgba(184, 227, 75, .10), transparent 19rem),
+        var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP",
+        "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
     }
-
-    button {
-      font: inherit;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button:focus-visible,
-    a:focus-visible {
-      outline: 3px solid var(--rose);
+    button { font: inherit; }
+    button:focus-visible, a:focus-visible {
+      outline: 3px solid rgba(109, 143, 184, .65);
       outline-offset: 3px;
     }
 
     .site-header {
       position: relative;
-      background: linear-gradient(
-        115deg, #101F35 0%, #14263F 62%, #203955 100%
-      );
-      color: white;
+      overflow: hidden;
+      color: #fff;
+      background:
+        linear-gradient(112deg, rgba(16, 30, 51, .99), rgba(23, 43, 70, .97)),
+        var(--navy);
       border-bottom: 3px solid var(--lime);
-      box-shadow: 0 4px 16px #14263F20;
     }
-
+    .site-header::before {
+      content: "";
+      position: absolute;
+      width: 290px;
+      height: 290px;
+      right: -100px;
+      top: -170px;
+      border: 1px solid rgba(184, 227, 75, .18);
+      transform: rotate(35deg);
+      pointer-events: none;
+    }
+    .site-header::after {
+      content: "";
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      right: -42px;
+      top: -126px;
+      border: 1px solid rgba(255, 255, 255, .09);
+      transform: rotate(35deg);
+      pointer-events: none;
+    }
     .header-inner {
-      max-width: 1080px;
+      width: min(100% - 36px, 1040px);
+      margin: 0 auto;
       min-height: 82px;
-      margin: auto;
-      padding: 13px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 18px;
+      position: relative;
+      z-index: 1;
     }
-
-    .brand {
-      display: inline-block;
-      color: white;
-      font-size: 26px;
+    .brand { display: flex; flex-direction: column; gap: 1px; }
+    .brand-name {
+      font-size: 1.55rem;
       font-weight: 850;
-      letter-spacing: .07em;
-      line-height: 1.2;
-      text-decoration: none;
+      letter-spacing: .10em;
+      line-height: 1.15;
+    }
+    .brand-sub {
+      color: #b9c5d4;
+      font-size: .62rem;
+      letter-spacing: .22em;
+      font-weight: 650;
+    }
+    .header-mark {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #d4deea;
+      font-size: .69rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
       white-space: nowrap;
     }
-
-    .brand small {
+    .header-mark::before {
+      content: "";
       display: block;
-      margin-top: 5px;
-      color: #C4CFDC;
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: .19em;
+      width: 23px;
+      height: 2px;
+      background: var(--lime);
     }
 
+    main {
+      width: min(100% - 32px, 820px);
+      margin: 0 auto;
+      padding: 32px 0 46px;
+    }
+    .intro { margin-bottom: 22px; }
+    .intro-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .intro-title-wrap { min-width: 0; }
     .register-button {
+      flex: 0 0 auto;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      min-height: 44px;
-      padding: 10px 16px;
-      border: 1px solid var(--lime);
-      border-radius: 6px;
-      background: var(--lime);
+      min-height: 42px;
+      padding: 9px 15px;
       color: var(--navy);
-      font-size: 13px;
+      background: linear-gradient(180deg, #c8ef65, var(--lime));
+      border: 1px solid #a5d23b;
+      border-radius: 7px;
+      box-shadow: 0 3px 0 #87ae2d, 0 6px 12px rgba(122, 158, 37, .16);
+      font-size: .8rem;
       font-weight: 850;
-      letter-spacing: .015em;
-      white-space: nowrap;
-      box-shadow: 0 3px 0 #829F2F;
-      transition: transform .15s ease, box-shadow .15s ease;
+      cursor: pointer;
+      transition: transform .12s ease, box-shadow .12s ease;
     }
-
-    .register-button .plus {
-      font-size: 19px;
-      font-weight: 500;
-      line-height: 1;
-    }
-
     .register-button:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 0 #829F2F;
+      box-shadow: 0 4px 0 #87ae2d, 0 8px 15px rgba(122, 158, 37, .2);
     }
-
-    .register-button:active {
-      transform: translateY(2px);
-      box-shadow: 0 1px 0 #829F2F;
-    }
-
-    main {
-      width: min(100% - 32px, 920px);
-      margin: 32px auto 56px;
-    }
-
-    .intro {
-      position: relative;
-      margin-bottom: 24px;
-      padding: 3px 0 4px 15px;
-      border-left: 3px solid var(--lime);
-    }
-
+    .register-button:active { transform: translateY(2px); box-shadow: 0 1px 0 #87ae2d; }
+    .register-plus { font-size: 1.15rem; line-height: 1; }
     .eyebrow {
-      margin: 0 0 5px;
-      color: var(--blue);
-      font-size: 10px;
-      font-weight: 850;
-      letter-spacing: .19em;
-    }
-
-    h1 {
-      margin: 0;
-      color: var(--navy);
-      font-size: clamp(27px, 5vw, 35px);
-      font-weight: 850;
-      letter-spacing: .025em;
-      line-height: 1.35;
-    }
-
-    .intro-description {
-      margin: 8px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .panel {
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--white);
-      box-shadow: 0 5px 20px #14263F0A;
-    }
-
-    .panel-heading {
-      position: relative;
-      padding: 18px 20px;
-      background: var(--navy);
-      color: white;
-    }
-
-    .panel-heading::after {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      width: 58px;
-      height: 3px;
-      background: var(--lime);
-      content: "";
-    }
-
-    .panel-heading h2 {
-      margin: 0;
-      font-size: 17px;
-      font-weight: 800;
-      letter-spacing: .025em;
-    }
-
-    .panel-heading p {
-      margin: 4px 0 0;
-      color: #D1DAE5;
-      font-size: 12px;
-    }
-
-    .filter-list {
-      padding: 5px 20px 0;
-    }
-
-    .filter-category {
-      border-bottom: 1px solid #E7EAF0;
-    }
-
-    .filter-category:last-child {
-      border-bottom: 0;
-    }
-
-    .category-toggle {
-      display: flex;
-      width: 100%;
-      min-height: 73px;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 2px;
-      border: 0;
-      background: transparent;
-      color: var(--navy);
-      text-align: left;
-    }
-
-    .category-toggle:hover .category-icon {
-      border-color: #B7C6D7;
-      background: #EDF2F7;
-    }
-
-    .category-icon {
-      display: grid;
-      width: 42px;
-      height: 42px;
-      flex: 0 0 42px;
-      place-items: center;
-      border: 1px solid #DDE4EC;
-      border-radius: 7px;
-      background: #F4F7FA;
-      font-size: 19px;
-      transition: background .15s ease, border-color .15s ease;
-    }
-
-    .category-copy {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .category-title {
-      display: block;
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .category-summary {
-      display: block;
-      margin-top: 2px;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .category-right {
       display: flex;
       align-items: center;
       gap: 9px;
-      color: var(--muted);
-    }
-
-    .selected-count {
-      display: none;
-      min-width: 22px;
-      padding: 1px 6px;
-      border-radius: 12px;
-      background: var(--rose);
-      color: white;
-      font-size: 11px;
-      font-weight: 800;
-      text-align: center;
-    }
-
-    .selected-count.visible {
-      display: inline-block;
-    }
-
-    .chevron {
-      display: inline-block;
+      margin: 0 0 8px;
       color: var(--blue);
-      font-size: 19px;
-      line-height: 1;
-      transition: transform .18s ease;
+      font-size: .68rem;
+      font-weight: 800;
+      letter-spacing: .19em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 22px;
+      height: 2px;
+      background: var(--lime-dark);
+    }
+    h1 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(1.65rem, 4vw, 2rem);
+      letter-spacing: .045em;
+      line-height: 1.3;
+      font-weight: 850;
+    }
+    .intro-copy {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: .88rem;
     }
 
+    .search-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 17px 20px;
+      color: #fff;
+      background: linear-gradient(105deg, var(--navy), var(--navy-2));
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .panel-title-wrap { display: flex; align-items: center; gap: 11px; }
+    .panel-symbol {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(184, 227, 75, .45);
+      color: var(--lime);
+      border-radius: 7px;
+      font-size: 1rem;
+    }
+    .panel-title { margin: 0; font-size: 1rem; font-weight: 800; letter-spacing: .04em; }
+    .panel-kicker {
+      margin-top: 1px;
+      color: #aebdd0;
+      font-size: .63rem;
+      letter-spacing: .13em;
+    }
+    .selected-total {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-width: 25px;
+      height: 25px;
+      padding: 0 7px;
+      color: white;
+      background: var(--rose);
+      border-radius: 5px;
+      font-size: .72rem;
+      font-weight: 800;
+    }
+    .selected-total.visible { display: inline-flex; }
+
+    .category-list { padding: 5px 18px 0; }
+    .category {
+      border-bottom: 1px solid var(--line);
+    }
+    .category:last-child { border-bottom: 0; }
+    .category-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 2px;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+    }
+    .category-icon {
+      width: 35px;
+      height: 35px;
+      flex: 0 0 35px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      font-size: 1rem;
+    }
+    .category-main { flex: 1; min-width: 0; }
+    .category-name { display: block; font-weight: 800; font-size: .91rem; }
+    .category-hint { display: block; margin-top: 1px; color: var(--muted); font-size: .7rem; }
+    .category-meta { display: flex; align-items: center; gap: 8px; }
+    .category-count {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-width: 21px;
+      height: 21px;
+      padding: 0 5px;
+      color: #fff;
+      background: var(--rose);
+      border-radius: 5px;
+      font-size: .68rem;
+      font-weight: 800;
+    }
+    .category-count.visible { display: inline-flex; }
+    .chevron {
+      width: 9px;
+      height: 9px;
+      border-right: 2px solid #718096;
+      border-bottom: 2px solid #718096;
+      transform: rotate(45deg) translateY(-2px);
+      transition: transform .16s ease;
+      margin-right: 5px;
+    }
     .category-toggle[aria-expanded="true"] .chevron {
-      transform: rotate(180deg);
+      transform: rotate(225deg) translate(-1px, -1px);
+    }
+    .category-toggle[aria-expanded="true"] .category-icon {
+      border-color: rgba(184, 227, 75, .9);
+      background: #f6fbe8;
     }
 
-    /* 開閉は display で確実に制御し、表示崩れを防ぐ */
     .tag-area {
       display: none;
-      padding: 0 2px 18px 54px;
+      padding: 0 0 17px 47px;
+      animation: reveal .15s ease-out;
     }
-
-    .tag-area.open {
-      display: block;
-      animation: reveal .16s ease-out;
-    }
-
+    .tag-area.open { display: block; }
     @keyframes reveal {
-      from { opacity: .65; }
-      to { opacity: 1; }
+      from { opacity: 0; transform: translateY(-3px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-
-    .area-group-title {
-      margin: 0 0 8px;
+    .tag-group-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin: 2px 0 9px;
       color: var(--muted);
-      font-size: 11px;
+      font-size: .68rem;
       font-weight: 800;
-      letter-spacing: .04em;
+      letter-spacing: .06em;
     }
-
-    .area-group-title:not(:first-child) {
-      margin-top: 16px;
+    .tag-group-label::before {
+      content: "";
+      width: 4px;
+      height: 13px;
+      border-radius: 2px;
+      background: var(--lime-dark);
     }
-
-    .tag-list {
+    .tag-group + .tag-group { margin-top: 17px; }
+    .tag-grid {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
     }
-
     .tag {
-      min-height: 37px;
+      min-height: 36px;
       padding: 7px 12px;
-      border: 1px solid #CDD5E0;
-      border-radius: 5px;
-      background: white;
-      color: #334155;
-      font-size: 12px;
-      font-weight: 550;
-      transition: background .12s ease, color .12s ease,
-        border-color .12s ease;
+      border: 1px solid #cfd8e3;
+      border-radius: 6px;
+      color: #36465a;
+      background: #fff;
+      font-size: .79rem;
+      line-height: 1.35;
+      cursor: pointer;
+      transition: background .12s ease, color .12s ease, border-color .12s ease, transform .12s ease;
+    }
+    .tag:hover { border-color: #8fa4bb; background: #f7f9fb; }
+    .tag:active { transform: scale(.98); }
+    .tag.selected {
+      color: #fff;
+      background: var(--navy-2);
+      border-color: var(--navy-2);
+      box-shadow: inset 0 -2px 0 rgba(184, 227, 75, .95);
+    }
+    .tag.selected::before {
+      content: "✓";
+      margin-right: 6px;
+      color: var(--lime);
+      font-weight: 900;
+    }
+    .area-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .area-tag {
+      width: 100%;
+      min-width: 0;
+      min-height: 38px;
+      padding: 7px 8px;
+      text-align: center;
+      white-space: nowrap;
+      font-size: .73rem;
+      letter-spacing: -.025em;
+    }
+    .area-tag.selected::before { margin-right: 4px; }
+    .filter-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: .7rem;
     }
 
-    .tag:hover {
-      border-color: var(--blue);
-    }
-
-    .tag[aria-pressed="true"] {
-      border-color: var(--navy);
-      background: var(--navy);
-      color: white;
-    }
-
-    .filter-footer {
-      padding: 18px 20px 20px;
-      border-top: 1px solid #E7EAF0;
-      background: #F8F9FB;
-    }
-
-    .selection-line {
+    .panel-actions {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 13px;
-      color: var(--muted);
-      font-size: 12px;
+      gap: 12px;
+      padding: 15px 20px 19px;
+      border-top: 1px solid #edf0f4;
+      background: linear-gradient(180deg, #fff, #fbfcfd);
     }
-
     .clear-button {
-      padding: 3px 0 3px 8px;
+      padding: 8px 2px;
       border: 0;
       background: transparent;
-      color: var(--blue);
-      font-size: 12px;
+      color: #637287;
+      font-size: .78rem;
+      font-weight: 700;
       text-decoration: underline;
+      text-decoration-color: #c0cad6;
       text-underline-offset: 3px;
+      cursor: pointer;
     }
-
+    .clear-button:hover { color: var(--navy); }
     .search-button {
-      display: block;
-      width: 100%;
-      min-height: 50px;
-      border: 1px solid var(--lime);
-      border-radius: 5px;
-      background: var(--lime);
+      min-width: 190px;
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 11px 20px;
       color: var(--navy);
-      font-size: 15px;
+      background: linear-gradient(180deg, #c8ef65, var(--lime));
+      border: 1px solid #a5d23b;
+      border-radius: 7px;
+      box-shadow: 0 4px 0 #87ae2d, 0 7px 14px rgba(122, 158, 37, .18);
+      font-size: .88rem;
       font-weight: 850;
       letter-spacing: .025em;
-      box-shadow: 0 3px 0 #829F2F;
-      transition: transform .15s ease, box-shadow .15s ease;
+      cursor: pointer;
+      transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
     }
-
-    .search-button:hover {
+    .search-button:hover:not(:disabled) {
       transform: translateY(-1px);
-      box-shadow: 0 4px 0 #829F2F;
+      box-shadow: 0 5px 0 #87ae2d, 0 9px 17px rgba(122, 158, 37, .22);
     }
-
-    .search-button:active {
+    .search-button:active:not(:disabled) {
       transform: translateY(2px);
-      box-shadow: 0 1px 0 #829F2F;
+      box-shadow: 0 2px 0 #87ae2d;
     }
+    .search-button:disabled {
+      color: #7e8997;
+      background: #e5e9ee;
+      border-color: #d5dbe3;
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: .85;
+    }
+    .search-arrow { font-size: 1.1rem; line-height: 1; }
 
     .results {
-      margin-top: 30px;
-      scroll-margin-top: 20px;
-    }
-
-    .results[hidden] {
       display: none;
+      margin-top: 27px;
+      animation: reveal .18s ease-out;
     }
-
+    .results.visible { display: block; }
     .results-heading {
       display: flex;
-      align-items: baseline;
+      align-items: end;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 12px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--navy);
     }
-
     .results-heading h2 {
       margin: 0;
       color: var(--navy);
-      font-size: 19px;
-      font-weight: 850;
+      font-size: 1.13rem;
+      letter-spacing: .025em;
     }
-
-    .results-count {
+    .results-label {
       color: var(--muted);
-      font-size: 12px;
+      font-size: .67rem;
+      font-weight: 800;
+      letter-spacing: .15em;
     }
-
+    .results-count { color: var(--muted); font-size: .75rem; }
     .empty-state {
-      padding: 34px 16px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: white;
+      display: grid;
+      justify-items: center;
+      gap: 9px;
+      padding: 35px 18px 38px;
+      background: rgba(255,255,255,.78);
+      border: 1px dashed #cbd5e1;
+      border-radius: 10px;
       text-align: center;
     }
-
     .empty-icon {
-      display: block;
-      margin-bottom: 8px;
-      color: var(--blue);
-      font-size: 29px;
-      line-height: 1.2;
+      display: grid;
+      place-items: center;
+      width: 43px;
+      height: 43px;
+      color: #8b99aa;
+      border: 1px solid #d4dce6;
+      border-radius: 50%;
+      background: #f7f9fb;
+      font-size: 1.15rem;
     }
-
-    .empty-state strong {
-      display: block;
-      color: var(--navy);
-      font-size: 15px;
-    }
-
-    .empty-state p {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .notice {
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 11px;
-      text-align: center;
-    }
+    .empty-state strong { color: #405065; font-size: .93rem; }
+    .empty-state p { margin: 0; color: var(--muted); font-size: .77rem; }
 
     .site-footer {
-      padding: 25px 16px;
-      border-top: 3px solid var(--lime);
+      color: #d5deea;
       background: var(--navy);
-      color: #C4CFDC;
-      font-size: 11px;
-      text-align: center;
+      border-top: 2px solid var(--lime);
     }
-
+    .footer-inner {
+      width: min(100% - 36px, 1040px);
+      min-height: 60px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
     .footer-brand {
-      margin-bottom: 4px;
-      color: white;
-      font-size: 14px;
-      font-weight: 800;
+      color: #fff;
+      font-size: .86rem;
+      font-weight: 850;
+      letter-spacing: .12em;
+    }
+    .footer-version {
+      color: #9eacbf;
+      font-size: .65rem;
       letter-spacing: .08em;
+      text-align: right;
     }
 
-    @media (min-width: 650px) {
-      main {
-        margin-top: 38px;
-      }
-
-      .filter-list {
-        padding-right: 26px;
-        padding-left: 26px;
-      }
-
-      .category-toggle {
-        min-height: 78px;
-      }
-
-      .tag {
-        font-size: 13px;
-      }
-
-      .filter-footer {
-        padding-right: 26px;
-        padding-left: 26px;
-      }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      z-index: 10;
+      width: max-content;
+      max-width: calc(100% - 32px);
+      padding: 10px 15px;
+      color: #fff;
+      background: #24364d;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(16,30,51,.22);
+      font-size: .8rem;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 8px);
+      transition: opacity .16s ease, transform .16s ease;
     }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-    @media (max-width: 420px) {
-      .header-inner {
-        min-height: 75px;
-        padding: 11px 13px;
-        gap: 8px;
-      }
-
-      .brand {
-        font-size: 22px;
-      }
-
-      .brand small {
-        font-size: 8px;
-      }
-
-      .register-button {
-        min-height: 42px;
-        gap: 5px;
-        padding: 9px 10px;
-        font-size: 12px;
-      }
-
-      main {
-        width: calc(100% - 24px);
-        margin-top: 25px;
-      }
-
-      .filter-list {
-        padding-right: 13px;
-        padding-left: 13px;
-      }
-
-      .category-toggle {
-        gap: 9px;
-      }
-
-      .category-icon {
-        width: 38px;
-        height: 38px;
-        flex-basis: 38px;
-      }
-
-      .category-title {
-        font-size: 13px;
-      }
-
-      .category-summary {
-        font-size: 10px;
-      }
-
-      .tag-area {
-        padding-left: 3px;
-      }
-
-      .panel-heading {
-        padding: 16px;
-      }
-
-      .filter-footer {
-        padding: 16px 14px 18px;
-      }
-
-      .tag {
-        padding-right: 10px;
-        padding-left: 10px;
-      }
+    @media (min-width: 760px) {
+      main { padding-top: 40px; }
+      .category-list { padding-left: 22px; padding-right: 22px; }
+      .tag-area { padding-left: 49px; }
+      .area-tag { font-size: .78rem; }
     }
-
+    @media (max-width: 480px) {
+      .header-inner { width: min(100% - 28px, 1040px); min-height: 73px; }
+      .brand-name { font-size: 1.4rem; }
+      .header-mark { font-size: .58rem; gap: 6px; letter-spacing: .07em; }
+      .header-mark::before { width: 14px; }
+      main { width: calc(100% - 24px); padding-top: 26px; }
+      .intro { margin-bottom: 18px; }
+      .intro-head { align-items: center; gap: 8px; }
+      .register-button { min-height: 38px; padding: 8px 10px; gap: 4px; font-size: .72rem; }
+      .register-plus { font-size: 1rem; }
+      .intro-copy { font-size: .81rem; }
+      .panel-head { padding: 14px 14px; }
+      .category-list { padding: 3px 13px 0; }
+      .category-toggle { gap: 9px; padding: 13px 1px; }
+      .category-icon { width: 32px; height: 32px; flex-basis: 32px; }
+      .category-hint { font-size: .66rem; }
+      .tag-area { padding-left: 41px; padding-bottom: 15px; }
+      .tag { padding: 7px 10px; font-size: .75rem; }
+      .area-grid { gap: 7px; }
+      .area-tag {
+        min-height: 38px;
+        padding: 7px 4px;
+        font-size: clamp(.59rem, 2.7vw, .72rem);
+        letter-spacing: -.045em;
+      }
+      .area-tag.selected::before { margin-right: 3px; }
+      .panel-actions { padding: 13px 14px 16px; gap: 8px; }
+      .search-button { min-width: 0; flex: 1; padding: 10px 12px; font-size: .82rem; }
+      .clear-button { font-size: .73rem; }
+      .footer-inner { width: calc(100% - 28px); min-height: 54px; }
+    }
     @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      *, *::before, *::after {
-        animation-duration: .01ms !important;
-        transition-duration: .01ms !important;
-      }
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
     }
   </style>
 </head>
-
 <body>
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="./" aria-label="えがログ トップ">
-        えがログ
-        <small>RESTAURANT DATABASE</small>
-      </a>
-
-      <button class="register-button" id="registerButton" type="button">
-        <span class="plus" aria-hidden="true">＋</span>
-        <span>お店を登録する</span>
-      </button>
+      <div class="brand" aria-label="えがログ">
+        <span class="brand-name">えがログ</span>
+        <span class="brand-sub">RESTAURANT DATABASE</span>
+      </div>
+      <div class="header-mark">FIND YOUR PLACE</div>
     </div>
   </header>
 
   <main>
-    <section class="intro">
-      <p class="eyebrow">FIND YOUR RESTAURANT</p>
-      <h1>お店を探す</h1>
-      <p class="intro-description">
-        ジャンルやエリア、人数などの条件からお店を探せます。
-      </p>
+    <section class="intro" aria-labelledby="page-title">
+      <div class="intro-head">
+        <div class="intro-title-wrap">
+          <p class="eyebrow">FIND YOUR RESTAURANT</p>
+          <h1 id="page-title">お店を探す</h1>
+        </div>
+        <button class="register-button" id="register-button" type="button">
+          <span class="register-plus" aria-hidden="true">＋</span><span>お店を登録</span>
+        </button>
+      </div>
+      <p class="intro-copy">条件を組み合わせて、ぴったりのお店を見つけましょう。</p>
     </section>
 
-    <section class="panel" aria-labelledby="filterHeading">
-      <div class="panel-heading">
-        <h2 id="filterHeading">条件を絞る</h2>
-        <p>気になる条件を選んで「検索」を押してください。</p>
+    <section class="search-panel" aria-labelledby="filter-title">
+      <div class="panel-head">
+        <div class="panel-title-wrap">
+          <span class="panel-symbol" aria-hidden="true">⌕</span>
+          <div>
+            <h2 class="panel-title" id="filter-title">条件を絞る</h2>
+            <div class="panel-kicker">FILTER YOUR SEARCH</div>
+          </div>
+        </div>
+        <span class="selected-total" id="selected-total" aria-live="polite">0</span>
       </div>
 
-      <div class="filter-list" id="filterList"></div>
-
-      <div class="filter-footer">
-        <div class="selection-line">
-          <span id="selectionSummary">条件は選択されていません</span>
-          <button class="clear-button" id="clearButton" type="button">
-            すべて解除
+      <div class="category-list" id="category-list">
+        <section class="category" data-category="genre">
+          <button class="category-toggle" type="button" aria-expanded="false" aria-controls="tags-genre">
+            <span class="category-icon" aria-hidden="true">🍴</span>
+            <span class="category-main">
+              <span class="category-name">ジャンル</span>
+              <span class="category-hint">料理の種類から探す</span>
+            </span>
+            <span class="category-meta"><span class="category-count" aria-hidden="true">0</span><span class="chevron" aria-hidden="true"></span></span>
           </button>
-        </div>
-        <button class="search-button" id="searchButton" type="button">
-          この条件で検索
+          <div class="tag-area" id="tags-genre"></div>
+        </section>
+
+        <section class="category" data-category="area">
+          <button class="category-toggle" type="button" aria-expanded="false" aria-controls="tags-area">
+            <span class="category-icon" aria-hidden="true">⌖</span>
+            <span class="category-main">
+              <span class="category-name">エリア</span>
+              <span class="category-hint">地域から探す</span>
+            </span>
+            <span class="category-meta"><span class="category-count" aria-hidden="true">0</span><span class="chevron" aria-hidden="true"></span></span>
+          </button>
+          <div class="tag-area" id="tags-area"></div>
+        </section>
+
+        <section class="category" data-category="size">
+          <button class="category-toggle" type="button" aria-expanded="false" aria-controls="tags-size">
+            <span class="category-icon" aria-hidden="true">♙</span>
+            <span class="category-main">
+              <span class="category-name">人数・規模</span>
+              <span class="category-hint">利用人数や宴会規模から探す</span>
+            </span>
+            <span class="category-meta"><span class="category-count" aria-hidden="true">0</span><span class="chevron" aria-hidden="true"></span></span>
+          </button>
+          <div class="tag-area" id="tags-size"></div>
+        </section>
+
+        <section class="category" data-category="conditions">
+          <button class="category-toggle" type="button" aria-expanded="false" aria-controls="tags-conditions">
+            <span class="category-icon" aria-hidden="true">⌂</span>
+            <span class="category-main">
+              <span class="category-name">設備・店舗条件</span>
+              <span class="category-hint">個室・駐車場・予約など</span>
+            </span>
+            <span class="category-meta"><span class="category-count" aria-hidden="true">0</span><span class="chevron" aria-hidden="true"></span></span>
+          </button>
+          <div class="tag-area" id="tags-conditions"></div>
+        </section>
+
+        <section class="category" data-category="mood">
+          <button class="category-toggle" type="button" aria-expanded="false" aria-controls="tags-mood">
+            <span class="category-icon" aria-hidden="true">◇</span>
+            <span class="category-main">
+              <span class="category-name">雰囲気</span>
+              <span class="category-hint">お店の空気感から探す</span>
+            </span>
+            <span class="category-meta"><span class="category-count" aria-hidden="true">0</span><span class="chevron" aria-hidden="true"></span></span>
+          </button>
+          <div class="tag-area" id="tags-mood"></div>
+        </section>
+      </div>
+
+      <div class="panel-actions">
+        <button class="clear-button" id="clear-button" type="button">すべて解除</button>
+        <button class="search-button" id="search-button" type="button" disabled>
+          <span>この条件で検索</span><span class="search-arrow" aria-hidden="true">→</span>
         </button>
       </div>
     </section>
 
-    <section class="results" id="results" aria-live="polite" hidden>
+    <section class="results" id="results" aria-live="polite" aria-labelledby="results-title">
       <div class="results-heading">
-        <h2>検索結果</h2>
-        <span class="results-count" id="resultsCount"></span>
+        <div>
+          <div class="results-label">SEARCH RESULTS</div>
+          <h2 id="results-title">検索結果</h2>
+        </div>
+        <span class="results-count" id="results-count">0件</span>
       </div>
       <div class="empty-state">
         <span class="empty-icon" aria-hidden="true">⌕</span>
         <strong>該当するお店がありません</strong>
+        <p>条件を変えて、もう一度検索してください。</p>
       </div>
     </section>
-
-    <p class="notice">
-      お店の情報は、仲間内で共有するためのデータベースです。
-    </p>
   </main>
 
   <footer class="site-footer">
-    <div class="footer-brand">えがログ</div>
-    お店データベース
+    <div class="footer-inner">
+      <span class="footer-brand">えがログ</span>
+      <span class="footer-version">Ver.4.0</span>
+    </div>
   </footer>
 
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
   <script>
-    const categories = [
-      {
-        id: "genre",
-        icon: "🍴",
-        title: "ジャンル",
-        summary: "料理の種類から探す",
-        options: [
-          "うどん", "ラーメン", "居酒屋", "焼肉", "寿司", "和食",
-          "洋食", "中華", "カレー", "定食", "カフェ", "その他"
-        ]
-      },
-      {
-        id: "area",
-        icon: "📍",
-        title: "エリア",
-        summary: "熊本市・熊本県内の地域から探す",
-        groups: [
-          {
-            title: "熊本市",
-            options: ["街", "中央区", "北区", "南区", "西区", "東区"]
-          },
-          {
-            title: "熊本県内",
-            options: [
-              "県北", "北東部", "阿蘇", "県南", "球磨人吉", "天草"
-            ]
-          }
-        ]
-      },
-      {
-        id: "size",
-        icon: "👥",
-        title: "人数・規模",
-        summary: "少人数から宴会まで",
-        options: [
-          "1～2人向け", "～5人", "6～10人", "大人数・宴会ok"
-        ]
-      },
-      {
-        id: "conditions",
-        icon: "🏠",
-        title: "設備・店舗条件",
-        summary: "個室・駐車場・予約など",
-        groups: [
-          { title: "個室", options: ["個室：あり", "個室：なし"] },
-          { title: "駐車場", options: ["駐車場：あり", "駐車場：なし"] },
-          {
-            title: "予約",
-            options: [
-              "予約：可", "予約：したほうがいい", "予約：不可"
-            ]
-          },
-          { title: "貸切", options: ["貸切：あり", "貸切：なし"] },
-          {
-            title: "飲み放題",
-            options: ["飲み放題：あり", "飲み放題：なし"]
-          },
-          {
-            title: "喫煙",
-            options: ["喫煙：喫煙可", "喫煙：禁煙", "喫煙：不明"]
-          }
-        ]
-      },
-      {
-        id: "atmosphere",
-        icon: "🎨",
-        title: "雰囲気",
-        summary: "お店の雰囲気から探す",
-        options: ["静か", "高級感・おしゃれ", "わいわい", "大衆・家族"]
-      }
-    ];
+    "use strict";
 
-    const selected = new Set();
+    // 現段階では画面デザインと検索条件選択の動作を実装しています。
+    // Googleスプレッドシートとのデータ取得・登録フォームは、次の実装段階で接続します。
+    const OPTIONS = {
+      genre: [
+        "うどん", "ラーメン", "居酒屋", "焼肉", "寿司", "和食",
+        "洋食", "中華", "カレー", "定食", "カフェ", "その他"
+      ],
+      areaCity: [
+        "街", "中央区", "北区", "南区", "西区", "東区"
+      ],
+      areaPrefecture: [
+        { label: "県北（山鹿・荒尾・玉名）", value: "県北" },
+        { label: "北東部（菊池・菊陽・合志）", value: "北東部" },
+        { label: "阿蘇（阿蘇地域）", value: "阿蘇" },
+        { label: "県南（宇城・宇土・八代）", value: "県南" },
+        { label: "球磨人吉（球磨・人吉地域）", value: "球磨人吉" },
+        { label: "天草（天草地域）", value: "天草" }
+      ],
+      size: [
+        "1～2人向け", "～5人", "6～10人", "大人数・宴会ok"
+      ],
+      conditions: [
+        { title: "個室", options: ["個室あり", "個室なし"] },
+        { title: "駐車場", options: ["駐車場あり", "駐車場なし"] },
+        { title: "予約", options: ["予約可", "予約したほうがいい", "予約不可"] },
+        { title: "貸切", options: ["貸切あり", "貸切なし"] },
+        { title: "飲み放題", options: ["飲み放題あり", "飲み放題なし"] },
+        { title: "喫煙", options: ["喫煙可", "禁煙", "不明"] }
+      ],
+      mood: ["静か", "高級感・おしゃれ", "わいわい", "大衆・家族"]
+    };
 
-    function makeTag(option) {
+    const selected = {
+      genre: new Set(),
+      area: new Set(),
+      size: new Set(),
+      conditions: new Set(),
+      mood: new Set()
+    };
+
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+    function createTag(label, value = label, extraClass = "") {
       const button = document.createElement("button");
       button.type = "button";
-      button.className = "tag";
-      button.textContent = option;
+      button.className = `tag ${extraClass}`.trim();
+      button.textContent = label;
+      button.dataset.value = value;
       button.setAttribute("aria-pressed", "false");
-
-      button.addEventListener("click", () => {
-        if (selected.has(option)) {
-          selected.delete(option);
-        } else {
-          selected.add(option);
-        }
-
-        updateTagStates();
-        updateSummary();
-      });
-
+      button.addEventListener("click", () => toggleTag(button));
       return button;
     }
 
-    function makeOptionGroup(options, title = "") {
+    function addTagGroup(container, title, values, className = "") {
       const group = document.createElement("div");
-
+      group.className = "tag-group";
       if (title) {
-        const heading = document.createElement("p");
-        heading.className = "area-group-title";
-        heading.textContent = title;
-        group.appendChild(heading);
+        const label = document.createElement("div");
+        label.className = "tag-group-label";
+        label.textContent = title;
+        group.appendChild(label);
       }
-
-      const tags = document.createElement("div");
-      tags.className = "tag-list";
-
-      options.forEach(option => {
-        tags.appendChild(makeTag(option));
-      });
-
-      group.appendChild(tags);
-      return group;
-    }
-
-    function renderCategories() {
-      const root = document.getElementById("filterList");
-
-      categories.forEach(category => {
-        const section = document.createElement("section");
-        section.className = "filter-category";
-
-        const toggle = document.createElement("button");
-        toggle.type = "button";
-        toggle.className = "category-toggle";
-        toggle.setAttribute("aria-expanded", "false");
-
-        const icon = document.createElement("span");
-        icon.className = "category-icon";
-        icon.textContent = category.icon;
-        icon.setAttribute("aria-hidden", "true");
-
-        const copy = document.createElement("span");
-        copy.className = "category-copy";
-
-        const title = document.createElement("span");
-        title.className = "category-title";
-        title.textContent = category.title;
-
-        const summary = document.createElement("span");
-        summary.className = "category-summary";
-        summary.textContent = category.summary;
-
-        copy.append(title, summary);
-
-        const right = document.createElement("span");
-        right.className = "category-right";
-
-        const count = document.createElement("span");
-        count.className = "selected-count";
-        count.dataset.countFor = category.id;
-
-        const chevron = document.createElement("span");
-        chevron.className = "chevron";
-        chevron.textContent = "⌄";
-        chevron.setAttribute("aria-hidden", "true");
-
-        right.append(count, chevron);
-        toggle.append(icon, copy, right);
-
-        const area = document.createElement("div");
-        area.className = "tag-area";
-        area.dataset.category = category.id;
-
-        if (category.groups) {
-          category.groups.forEach(group => {
-            area.appendChild(makeOptionGroup(group.options, group.title));
-          });
+      const grid = document.createElement("div");
+      grid.className = className || "tag-grid";
+      values.forEach(item => {
+        if (typeof item === "string") {
+          grid.appendChild(createTag(item));
         } else {
-          area.appendChild(makeOptionGroup(category.options));
+          grid.appendChild(createTag(item.label, item.value, item.className || ""));
         }
-
-        toggle.addEventListener("click", () => {
-          const isOpen = area.classList.toggle("open");
-          toggle.setAttribute("aria-expanded", String(isOpen));
-        });
-
-        section.append(toggle, area);
-        root.appendChild(section);
       });
+      group.appendChild(grid);
+      container.appendChild(group);
     }
 
-    function updateTagStates() {
-      document.querySelectorAll(".tag").forEach(button => {
-        const isSelected = selected.has(button.textContent);
-        button.setAttribute("aria-pressed", String(isSelected));
+    function buildOptions() {
+      addTagGroup($("#tags-genre"), "", OPTIONS.genre);
+
+      const areaContainer = $("#tags-area");
+      addTagGroup(areaContainer, "熊本市", OPTIONS.areaCity);
+      addTagGroup(
+        areaContainer,
+        "熊本県内",
+        OPTIONS.areaPrefecture.map(item => ({
+          label: item.label,
+          value: item.value,
+          className: "area-tag"
+        })),
+        "tag-grid area-grid"
+      );
+      // 熊本市内はこれまでどおりのタグ表示。県内のみ2列の横幅を使った表示です。
+      $$("#tags-area .tag-group:first-child .tag").forEach(tag => {
+        tag.classList.add("city-tag");
       });
 
-      categories.forEach(category => {
-        const options = category.groups
-          ? category.groups.flatMap(group => group.options)
-          : category.options;
+      addTagGroup($("#tags-size"), "", OPTIONS.size);
 
-        const count = options.filter(option => selected.has(option)).length;
-        const badge = document.querySelector(
-          `[data-count-for="${category.id}"]`
-        );
+      const conditionsContainer = $("#tags-conditions");
+      OPTIONS.conditions.forEach(group => {
+        addTagGroup(conditionsContainer, group.title, group.options);
+      });
 
-        badge.textContent = count;
+      addTagGroup($("#tags-mood"), "", OPTIONS.mood);
+    }
+
+    function toggleTag(button) {
+      const category = button.closest(".category").dataset.category;
+      const value = button.dataset.value;
+      if (selected[category].has(value)) {
+        selected[category].delete(value);
+        button.classList.remove("selected");
+        button.setAttribute("aria-pressed", "false");
+      } else {
+        selected[category].add(value);
+        button.classList.add("selected");
+        button.setAttribute("aria-pressed", "true");
+      }
+      updateCounts();
+      $("#results").classList.remove("visible");
+    }
+
+    function getSelectedCount() {
+      return Object.values(selected).reduce((sum, set) => sum + set.size, 0);
+    }
+
+    function updateCounts() {
+      let total = 0;
+      $$(".category").forEach(categoryElement => {
+        const category = categoryElement.dataset.category;
+        const count = selected[category].size;
+        const badge = $(".category-count", categoryElement);
+        badge.textContent = String(count);
         badge.classList.toggle("visible", count > 0);
+        total += count;
       });
+
+      const totalBadge = $("#selected-total");
+      totalBadge.textContent = String(total);
+      totalBadge.classList.toggle("visible", total > 0);
+      $("#search-button").disabled = total === 0;
     }
 
-    function updateSummary() {
-      const count = selected.size;
-      document.getElementById("selectionSummary").textContent =
-        count === 0
-          ? "条件は選択されていません"
-          : `${count}個の条件を選択中`;
+    function clearAll() {
+      Object.keys(selected).forEach(key => selected[key].clear());
+      $$(".tag.selected").forEach(tag => {
+        tag.classList.remove("selected");
+        tag.setAttribute("aria-pressed", "false");
+      });
+      updateCounts();
+      $("#results").classList.remove("visible");
+      showToast("選択した条件をすべて解除しました");
     }
 
-    document.getElementById("clearButton").addEventListener("click", () => {
-      selected.clear();
-      updateTagStates();
-      updateSummary();
+    function search() {
+      if (getSelectedCount() === 0) return;
+      $("#results").classList.add("visible");
+      $("#results-count").textContent = "0件";
+      $("#results").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    let toastTimer;
+    function showToast(message) {
+      const toast = $("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    $$(".category-toggle").forEach(button => {
+      button.addEventListener("click", () => {
+        const expanded = button.getAttribute("aria-expanded") === "true";
+        const target = document.getElementById(button.getAttribute("aria-controls"));
+        // カテゴリは複数同時に開いたままにできます。
+        button.setAttribute("aria-expanded", String(!expanded));
+        target.classList.toggle("open", !expanded);
+      });
     });
 
-    document.getElementById("searchButton").addEventListener("click", () => {
-      const results = document.getElementById("results");
-      results.hidden = false;
-      document.getElementById("resultsCount").textContent = "0件";
-      results.scrollIntoView({ behavior: "smooth", block: "start" });
+    $("#clear-button").addEventListener("click", clearAll);
+    $("#search-button").addEventListener("click", search);
+    $("#register-button").addEventListener("click", () => {
+      showToast("お店の登録フォームは、次の制作段階で追加します。");
     });
 
-    document.getElementById("registerButton").addEventListener("click", () => {
-      alert("お店の登録フォームは、次の制作段階で追加します。");
-    });
-
-    renderCategories();
+    buildOptions();
+    updateCounts();
   </script>
 </body>
 </html>

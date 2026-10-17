@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#101e33">
-  <title>えがログ Ver.5.2｜お店を探す</title>
+  <title>えがログ Ver.5.3｜お店を探す</title>
   <style>
     :root {
       --navy: #101e33;
@@ -546,15 +546,14 @@
       width: min(100% - 36px, 1040px);
       min-height: 60px;
       margin: 0 auto;
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      justify-content: flex-end;
       gap: 12px;
     }
     .footer-brand {
-      position: absolute;
-      left: calc(50% + (100vw - 100%) / 2);
-      transform: translateX(-50%);
+      grid-column: 2;
+      justify-self: center;
       color: #fff;
       font-size: .86rem;
       font-weight: 850;
@@ -562,6 +561,8 @@
       white-space: nowrap;
     }
     .footer-version {
+      grid-column: 3;
+      justify-self: end;
       color: #9eacbf;
       font-size: .65rem;
       letter-spacing: .08em;
@@ -757,7 +758,7 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <span class="footer-brand">えがログ</span>
-      <span class="footer-version">Ver.5.2</span>
+      <span class="footer-version">Ver.5.3</span>
     </div>
   </footer>
 

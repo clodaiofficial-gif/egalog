@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#101e33">
-  <title>えがログ Ver.5.3｜お店を探す</title>
+  <title>えがログ Ver.6.0｜お店を探す</title>
   <style>
     :root {
       --navy: #101e33;
@@ -513,6 +513,7 @@
       letter-spacing: .15em;
     }
     .results-count { color: #c0ccda; font-size: .75rem; }
+    .empty-state[hidden] { display: none; }
     .empty-state {
       display: grid;
       justify-items: center;
@@ -535,6 +536,101 @@
     }
     .empty-state strong { color: #405065; font-size: .93rem; }
     .empty-state p { margin: 0; color: var(--muted); font-size: .77rem; }
+
+
+    .data-status {
+      margin: 8px 0 0;
+      color: #b8c7d8;
+      font-size: .72rem;
+    }
+    .data-status.error { color: #ffd0d6; }
+    .data-status.ready { color: #d1e8a0; }
+    .result-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 11px;
+    }
+    .result-card {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 14px;
+      padding: 12px;
+      background: #fff;
+      border: 1px solid rgba(216, 224, 233, .95);
+      border-radius: 10px;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, .13);
+      min-width: 0;
+    }
+    .result-photo {
+      width: 112px;
+      aspect-ratio: 1 / 1;
+      border-radius: 7px;
+      object-fit: cover;
+      background: #e5e9ee;
+    }
+    .photo-placeholder {
+      width: 112px;
+      aspect-ratio: 1 / 1;
+      display: grid;
+      place-items: center;
+      color: #8996a5;
+      background: #e5e9ee;
+      border: 1px solid #d5dce5;
+      border-radius: 7px;
+    }
+    .photo-placeholder svg { width: 30px; height: 30px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .result-main { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+    .result-name {
+      margin: 0;
+      color: var(--navy);
+      font-size: .98rem;
+      line-height: 1.35;
+      font-weight: 850;
+      overflow-wrap: anywhere;
+    }
+    .result-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .result-tag {
+      display: inline-block;
+      padding: 3px 7px;
+      color: #52647a;
+      background: #eef2f6;
+      border-radius: 4px;
+      font-size: .66rem;
+      line-height: 1.4;
+    }
+    .result-meta {
+      color: #647386;
+      font-size: .72rem;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+    .result-rating {
+      margin-top: auto;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      color: var(--navy);
+      font-weight: 850;
+      font-size: .88rem;
+    }
+    .result-rating small { color: #718096; font-size: .65rem; font-weight: 650; }
+    .result-rating strong { color: #597c18; font-size: 1.1rem; }
+    .result-empty-hint {
+      margin: 10px 0 0;
+      color: #c0ccda;
+      font-size: .72rem;
+    }
+    @media (max-width: 480px) {
+      .result-card { grid-template-columns: 94px minmax(0, 1fr); gap: 10px; padding: 10px; }
+      .result-photo, .photo-placeholder { width: 94px; }
+      .result-name { font-size: .9rem; }
+      .result-meta { font-size: .68rem; }
+    }
+    @media (min-width: 700px) {
+      .result-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .result-card { grid-template-columns: 96px minmax(0, 1fr); }
+      .result-photo, .photo-placeholder { width: 96px; }
+    }
 
     .site-footer {
       color: #d5deea;
@@ -655,6 +751,7 @@
         </button>
       </div>
       <p class="intro-copy">条件を組み合わせて、ぴったりのお店を見つけましょう。</p>
+      <p class="data-status" id="data-status" role="status" aria-live="polite">お店データを読み込んでいます...</p>
     </section>
 
     <section class="search-panel" aria-labelledby="filter-title">
@@ -747,7 +844,8 @@
         </div>
         <span class="results-count" id="results-count">0件</span>
       </div>
-      <div class="empty-state">
+      <div class="result-list" id="result-list"></div>
+      <div class="empty-state" id="empty-state" hidden>
         <span class="empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 4.2 4.2"></path></svg></span>
         <strong>該当するお店がありません</strong>
         <p>条件を変えて、もう一度検索してください。</p>
@@ -758,7 +856,7 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <span class="footer-brand">えがログ</span>
-      <span class="footer-version">Ver.5.3</span>
+      <span class="footer-version">Ver.6.0</span>
     </div>
   </footer>
 
@@ -767,27 +865,20 @@
   <script>
     "use strict";
 
-    // 現段階では画面デザインと検索条件選択の動作を実装しています。
-    // Googleスプレッドシートとのデータ取得・登録フォームは、次の実装段階で接続します。
+    // Ver.6.0：Google Apps Scriptから店舗データを取得し、条件検索・結果表示を行います。
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwPRUrUK7aFteIdXPaIGkrxpLIrv3TfHwSP2AQmB5oSgzbIj39d6IXkjmiwwYVb73hk/exec";
     const OPTIONS = {
-      genre: [
-        "うどん", "ラーメン", "居酒屋", "焼肉", "寿司", "和食",
-        "洋食", "中華", "カレー", "定食", "カフェ", "その他"
-      ],
-      areaCity: [
-        "街", "中央区", "北区", "南区", "西区", "東区"
-      ],
+      genre: ["うどん", "ラーメン", "居酒屋", "焼肉", "寿司", "和食", "洋食", "中華", "カレー", "定食", "カフェ", "その他"],
+      areaCity: ["街", "中央区", "北区", "南区", "西区", "東区"],
       areaPrefecture: [
         { label: "県北（山鹿・荒尾・玉名）", value: "県北" },
         { label: "北東部（菊池・菊陽・合志）", value: "北東部" },
         { label: "阿蘇（阿蘇地域）", value: "阿蘇" },
         { label: "県南（宇城・宇土・八代）", value: "県南" },
-        { label: "球磨人吉（球磨・人吉地域）", value: "球磨人吉" },
+        { label: "球磨人吉（球磨・人吉）", value: "球磨人吉" },
         { label: "天草（天草地域）", value: "天草" }
       ],
-      size: [
-        "1～2人向け", "～5人", "6～10人", "大人数・宴会ok"
-      ],
+      size: ["1～2人向け", "～5人", "6～10人", "大人数・宴会ok"],
       conditions: [
         { title: "個室", options: ["個室あり", "個室なし"] },
         { title: "駐車場", options: ["駐車場あり", "駐車場なし"] },
@@ -800,12 +891,11 @@
     };
 
     const selected = {
-      genre: new Set(),
-      area: new Set(),
-      size: new Set(),
-      conditions: new Set(),
-      mood: new Set()
+      genre: new Set(), area: new Set(), size: new Set(),
+      conditions: new Set(), mood: new Set()
     };
+    let stores = [];
+    let dataLoaded = false;
 
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -833,11 +923,8 @@
       const grid = document.createElement("div");
       grid.className = className || "tag-grid";
       values.forEach(item => {
-        if (typeof item === "string") {
-          grid.appendChild(createTag(item));
-        } else {
-          grid.appendChild(createTag(item.label, item.value, item.className || ""));
-        }
+        if (typeof item === "string") grid.appendChild(createTag(item));
+        else grid.appendChild(createTag(item.label, item.value, item.className || ""));
       });
       group.appendChild(grid);
       container.appendChild(group);
@@ -845,31 +932,15 @@
 
     function buildOptions() {
       addTagGroup($("#tags-genre"), "", OPTIONS.genre);
-
       const areaContainer = $("#tags-area");
       addTagGroup(areaContainer, "熊本市", OPTIONS.areaCity);
-      addTagGroup(
-        areaContainer,
-        "熊本県内",
-        OPTIONS.areaPrefecture.map(item => ({
-          label: item.label,
-          value: item.value,
-          className: "area-tag"
-        })),
-        "tag-grid area-grid"
-      );
-      // 熊本市内はこれまでどおりのタグ表示。県内のみ2列の横幅を使った表示です。
-      $$("#tags-area .tag-group:first-child .tag").forEach(tag => {
-        tag.classList.add("city-tag");
-      });
-
+      addTagGroup(areaContainer, "熊本県内", OPTIONS.areaPrefecture.map(item => ({
+        label: item.label, value: item.value, className: "area-tag"
+      })), "tag-grid area-grid");
+      $$("#tags-area .tag-group:first-child .tag").forEach(tag => tag.classList.add("city-tag"));
       addTagGroup($("#tags-size"), "", OPTIONS.size);
-
       const conditionsContainer = $("#tags-conditions");
-      OPTIONS.conditions.forEach(group => {
-        addTagGroup(conditionsContainer, group.title, group.options);
-      });
-
+      OPTIONS.conditions.forEach(group => addTagGroup(conditionsContainer, group.title, group.options));
       addTagGroup($("#tags-mood"), "", OPTIONS.mood);
     }
 
@@ -895,15 +966,13 @@
 
     function updateCounts() {
       let total = 0;
-      $$(".category").forEach(categoryElement => {
-        const category = categoryElement.dataset.category;
-        const count = selected[category].size;
-        const badge = $(".category-count", categoryElement);
+      $$(".category").forEach(el => {
+        const count = selected[el.dataset.category].size;
+        const badge = $(".category-count", el);
         badge.textContent = String(count);
         badge.classList.toggle("visible", count > 0);
         total += count;
       });
-
       const totalBadge = $("#selected-total");
       totalBadge.textContent = String(total);
       totalBadge.classList.toggle("visible", total > 0);
@@ -921,10 +990,148 @@
       showToast("選択した条件をすべて解除しました");
     }
 
+    function splitValues(value) {
+      if (value === null || value === undefined || value === "") return [];
+      if (Array.isArray(value)) return value.flatMap(splitValues);
+      return String(value).split(/[,、\n;；|]/).map(v => v.trim()).filter(Boolean);
+    }
+
+    function fieldValues(store, key) {
+      return splitValues(store[key]);
+    }
+
+    function includesAny(store, key, selectedValues) {
+      if (!selectedValues.size) return true;
+      const actual = fieldValues(store, key);
+      return Array.from(selectedValues).some(value => actual.includes(value));
+    }
+
+    const CONDITION_MAP = {
+      "個室あり": ["個室", "あり"], "個室なし": ["個室", "なし"],
+      "駐車場あり": ["駐車場", "あり"], "駐車場なし": ["駐車場", "なし"],
+      "予約可": ["予約", "可"], "予約したほうがいい": ["予約", "したほうがいい"], "予約不可": ["予約", "不可"],
+      "貸切あり": ["貸切", "あり"], "貸切なし": ["貸切", "なし"],
+      "飲み放題あり": ["飲み放題", "あり"], "飲み放題なし": ["飲み放題", "なし"],
+      "喫煙可": ["喫煙", "喫煙可"], "禁煙": ["喫煙", "禁煙"], "不明": ["喫煙", "不明"]
+    };
+
+    function matchesConditions(store) {
+      const grouped = new Map();
+      selected.conditions.forEach(tag => {
+        const pair = CONDITION_MAP[tag];
+        if (!pair) return;
+        const [field, value] = pair;
+        if (!grouped.has(field)) grouped.set(field, new Set());
+        grouped.get(field).add(value);
+      });
+      for (const [field, wanted] of grouped.entries()) {
+        const actual = fieldValues(store, field);
+        if (!Array.from(wanted).some(value => actual.includes(value))) return false;
+      }
+      return true;
+    }
+
+    function matchesStore(store) {
+      return includesAny(store, "ジャンル", selected.genre) &&
+        includesAny(store, "エリア", selected.area) &&
+        includesAny(store, "人数規模", selected.size) &&
+        includesAny(store, "雰囲気", selected.mood) &&
+        matchesConditions(store);
+    }
+
+    function ratingValue(store) {
+      const n = Number(store["総合評価"]);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function dateValue(store) {
+      const raw = store["登録日時"] || store["更新日時"] || "";
+      const parsed = Date.parse(raw);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    function safeText(value, fallback = "") {
+      return value === null || value === undefined || value === "" ? fallback : String(value);
+    }
+
+    function makePlaceholder() {
+      const div = document.createElement("div");
+      div.className = "photo-placeholder";
+      div.setAttribute("aria-label", "写真なし");
+      div.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5h4l1.5-2h7l1.5 2h4v12H3z"></path><circle cx="12" cy="13.5" r="3.5"></circle></svg>';
+      return div;
+    }
+
+    function createResultCard(store) {
+      const card = document.createElement("article");
+      card.className = "result-card";
+
+      const photoUrl = safeText(store["写真URL1"]).trim();
+      if (photoUrl) {
+        const img = document.createElement("img");
+        img.className = "result-photo";
+        img.alt = safeText(store["店名"], "お店") + "の写真";
+        img.loading = "lazy";
+        img.src = photoUrl;
+        img.addEventListener("error", () => img.replaceWith(makePlaceholder()), { once: true });
+        card.appendChild(img);
+      } else {
+        card.appendChild(makePlaceholder());
+      }
+
+      const main = document.createElement("div");
+      main.className = "result-main";
+      const name = document.createElement("h3");
+      name.className = "result-name";
+      name.textContent = safeText(store["店名"], "店名未登録");
+      main.appendChild(name);
+
+      const tags = document.createElement("div");
+      tags.className = "result-tags";
+      [ ...fieldValues(store, "ジャンル"), ...fieldValues(store, "エリア") ].slice(0, 5).forEach(value => {
+        const span = document.createElement("span");
+        span.className = "result-tag";
+        span.textContent = value;
+        tags.appendChild(span);
+      });
+      if (tags.childElementCount) main.appendChild(tags);
+
+      const size = safeText(store["人数規模"]);
+      if (size) {
+        const meta = document.createElement("div");
+        meta.className = "result-meta";
+        meta.textContent = "人数・規模：" + size;
+        main.appendChild(meta);
+      }
+
+      const rating = document.createElement("div");
+      rating.className = "result-rating";
+      rating.innerHTML = '<small>総合評価</small>';
+      const score = document.createElement("strong");
+      score.textContent = Number.isFinite(Number(store["総合評価"])) && store["総合評価"] !== "" ? Number(store["総合評価"]).toFixed(1) : "—";
+      rating.appendChild(score);
+      rating.appendChild(document.createTextNode(" / 10.0"));
+      main.appendChild(rating);
+
+      card.appendChild(main);
+      return card;
+    }
+
     function search() {
       if (getSelectedCount() === 0) return;
+      if (!dataLoaded) {
+        showToast("お店データの読み込みが完了していません");
+        return;
+      }
+      const matched = stores.filter(matchesStore);
+      matched.sort((a, b) => ratingValue(b) - ratingValue(a) || dateValue(b) - dateValue(a));
+
+      const list = $("#result-list");
+      list.replaceChildren();
+      matched.forEach(store => list.appendChild(createResultCard(store)));
+      $("#results-count").textContent = matched.length + "件";
+      $("#empty-state").hidden = matched.length !== 0;
       $("#results").classList.add("visible");
-      $("#results-count").textContent = "0件";
       $("#results").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -937,11 +1144,38 @@
       toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
     }
 
+    async function loadStores() {
+      const status = $("#data-status");
+      try {
+        const response = await fetch(GAS_URL + "?action=list", {
+          method: "GET",
+          mode: "cors",
+          cache: "no-store",
+          redirect: "follow"
+        });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const payload = await response.json();
+        if (!payload || payload.success !== true || !Array.isArray(payload.stores)) {
+          throw new Error("GASから想定外のデータが返されました");
+        }
+        stores = payload.stores.filter(store => store && safeText(store["店舗ID"]).trim() !== "");
+        dataLoaded = true;
+        status.textContent = stores.length
+          ? "お店データを読み込みました（" + stores.length + "件）"
+          : "お店データはまだ登録されていません。";
+        status.classList.add("ready");
+      } catch (error) {
+        console.error("店舗データの取得に失敗しました:", error);
+        status.textContent = "お店データを読み込めませんでした。通信制限の可能性があります。";
+        status.classList.add("error");
+        dataLoaded = false;
+      }
+    }
+
     $$(".category-toggle").forEach(button => {
       button.addEventListener("click", () => {
         const expanded = button.getAttribute("aria-expanded") === "true";
         const target = document.getElementById(button.getAttribute("aria-controls"));
-        // カテゴリは複数同時に開いたままにできます。
         button.setAttribute("aria-expanded", String(!expanded));
         target.classList.toggle("open", !expanded);
       });
@@ -955,6 +1189,7 @@
 
     buildOptions();
     updateCounts();
+    loadStores();
   </script>
 </body>
 </html>

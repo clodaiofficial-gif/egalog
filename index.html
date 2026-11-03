@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#101e33">
-  <title>えがログ Ver.6.4｜お店を探す</title>
+  <title>えがログ Ver.6.6｜お店を探す</title>
   <style>
     :root {
       --navy: #101e33;
@@ -828,6 +828,67 @@
       .search-button { min-width: 0; padding-left: 10px; padding-right: 10px; }
     }
 
+
+    /* Ver.6.5 登録フォーム */
+    .register-main { width: min(100% - 32px, 820px); margin: 0 auto; padding: 28px 0 46px; }
+    .register-page-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
+    .register-page-head h1 { color:#fff; font-size:clamp(1.45rem,4vw,1.9rem); }
+    .register-page-head p { margin:7px 0 0; color:#c0ccda; font-size:.82rem; }
+    .back-search { border:1px solid rgba(255,255,255,.35); background:rgba(255,255,255,.08); color:#fff; border-radius:7px; padding:9px 12px; font-weight:750; cursor:pointer; white-space:nowrap; }
+    .register-form-shell { background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden; box-shadow:var(--shadow); }
+    .form-note { padding:15px 19px; background:#f5f8fb; color:#586779; font-size:.78rem; border-bottom:1px solid var(--line); }
+    .form-note b { color:#bd4c60; }
+    .form-card { border-bottom:1px solid var(--line); }
+    .form-card:last-of-type { border-bottom:0; }
+    .form-card-toggle { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:17px 19px; border:0; background:#fff; color:var(--navy); text-align:left; cursor:pointer; }
+    .form-card-toggle:hover { background:#f8fafc; }
+    .form-card-title { display:flex; align-items:center; gap:10px; font-weight:850; font-size:.93rem; }
+    .form-card-number { display:grid; place-items:center; width:27px; height:27px; border-radius:7px; background:#eaf0f6; color:#425a75; font-size:.72rem; }
+    .form-card-meta { display:flex; align-items:center; gap:9px; color:#788697; font-size:.7rem; white-space:nowrap; }
+    .form-required { color:#bd4c60; font-weight:800; }
+    .form-chevron { width:9px; height:9px; border-right:2px solid #788697; border-bottom:2px solid #788697; transform:rotate(45deg); transition:transform .18s; margin:0 4px 4px; }
+    .form-card-toggle[aria-expanded="true"] .form-chevron { transform:rotate(225deg); margin-top:7px; margin-bottom:0; }
+    .form-card-body { display:none; padding:2px 19px 20px; }
+    .form-card-body.open { display:block; }
+    .form-field { margin-top:16px; }
+    .form-field:first-child { margin-top:10px; }
+    .form-label { display:flex; align-items:center; gap:7px; margin-bottom:7px; color:#35465a; font-size:.8rem; font-weight:800; }
+    .form-label .req { color:#bd4c60; font-size:.68rem; }
+    .form-help { display:block; margin-top:5px; color:#8290a0; font-size:.69rem; }
+    .form-input, .form-select, .form-textarea { width:100%; min-height:43px; padding:10px 12px; border:1px solid #cfd8e3; border-radius:7px; background:#fff; color:#263548; font:inherit; font-size:.84rem; }
+    .form-textarea { min-height:105px; resize:vertical; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { outline:2px solid rgba(109,143,184,.35); border-color:#7896bb; }
+    .form-two-col { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }
+    .form-choice-grid { display:flex; flex-wrap:wrap; gap:8px; }
+    .form-choice { position:relative; }
+    .form-choice input { position:absolute; opacity:0; pointer-events:none; }
+    .form-choice span { display:inline-flex; align-items:center; min-height:38px; padding:8px 12px; border:1px solid #d3dce6; border-radius:7px; background:#f8fafc; color:#536276; font-size:.77rem; font-weight:700; cursor:pointer; }
+    .form-choice input:checked + span { border-color:#9bc62e; background:#f1f8df; color:#344b13; box-shadow:inset 0 0 0 1px #b8e34b; }
+    .form-choice input:focus-visible + span { outline:3px solid rgba(109,143,184,.45); outline-offset:2px; }
+    .form-rating-row { display:flex; flex-wrap:wrap; gap:7px; }
+    .form-rating-row label { position:relative; }
+    .form-rating-row input { position:absolute; opacity:0; }
+    .form-rating-row span { display:grid; place-items:center; width:49px; height:40px; border:1px solid #d3dce6; border-radius:7px; color:#536276; background:#f8fafc; font-size:.8rem; font-weight:800; cursor:pointer; }
+    .form-rating-row input:checked + span { color:#344b13; background:#f1f8df; border-color:#9bc62e; }
+    .form-bottom { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:18px 19px; background:#f5f8fb; border-top:1px solid var(--line); }
+    .form-bottom small { color:#758396; font-size:.7rem; }
+    .form-submit { border:0; border-radius:7px; padding:12px 20px; background:linear-gradient(180deg,#c8ef65,var(--lime)); color:var(--navy); font-weight:850; cursor:pointer; box-shadow:0 3px 0 #87ae2d; }
+    .form-submit:disabled { opacity:.55; cursor:not-allowed; }
+    .form-feedback { display:none; margin:14px 19px 0; padding:11px 13px; border-radius:7px; background:#fff5e8; color:#80531b; font-size:.78rem; }
+    .form-feedback.show { display:block; }
+    .form-photo-note { padding:12px; border:1px dashed #bdc9d7; border-radius:8px; background:#f8fafc; color:#718096; font-size:.75rem; }
+    @media(max-width:650px) {
+      .register-main { width:calc(100% - 24px); padding-top:18px; }
+      .register-page-head { align-items:flex-start; }
+      .back-search { padding:8px 9px; font-size:.72rem; }
+      .form-card-toggle { padding:15px 13px; }
+      .form-card-body { padding:2px 13px 17px; }
+      .form-note { padding:13px; }
+      .form-two-col { grid-template-columns:1fr; gap:0; }
+      .form-bottom { align-items:flex-start; flex-direction:column; padding:15px 13px; }
+      .form-submit { width:100%; }
+    }
+
     .site-footer {
       color: #d5deea;
       background: var(--navy);
@@ -1055,6 +1116,78 @@
     </section>
   </main>
 
+
+  <main id="register-main" class="register-main" hidden>
+    <div class="register-page-head">
+      <div><p class="eyebrow">REGISTER A RESTAURANT</p><h1>お店の登録申請</h1><p>知っているお店を、みんなで共有しましょう。</p></div>
+      <button type="button" class="back-search" id="register-back">← お店を探す</button>
+    </div>
+    <form class="register-form-shell" id="store-register-form" novalidate>
+      <div class="form-note"><span class="form-required">＊</span> は必須項目です。任意項目は分かる範囲で入力してください。</div>
+      <section class="form-card">
+        <button type="button" class="form-card-toggle" aria-expanded="true" aria-controls="reg-basic"><span class="form-card-title"><span class="form-card-number">01</span>お店の基本情報</span><span class="form-card-meta"><span class="form-required">必須項目あり</span><i class="form-chevron"></i></span></button>
+        <div class="form-card-body open" id="reg-basic">
+          <div class="form-field"><label class="form-label" for="reg-name">店名 <span class="req">＊必須</span></label><input class="form-input" id="reg-name" name="storeName" required maxlength="100" placeholder="例：えがログ食堂"></div>
+          <div class="form-field"><div class="form-label">ジャンル <span class="req">＊必須・複数選択可</span></div><div class="form-choice-grid" id="reg-genre"></div></div>
+          <div class="form-field"><div class="form-label">エリア <span class="req">＊必須・単一選択</span></div><div class="form-choice-grid" id="reg-area"></div></div>
+          <div class="form-field"><label class="form-label" for="reg-address">所在地・住所</label><input class="form-input" id="reg-address" name="address" placeholder="例：熊本市中央区○○（空白でも可）"></div>
+          <div class="form-field"><label class="form-label" for="reg-url">お店のURL</label><input class="form-input" id="reg-url" name="url" type="url" placeholder="https://...（空白でも可）"></div>
+        </div>
+      </section>
+      <section class="form-card">
+        <button type="button" class="form-card-toggle" aria-expanded="false" aria-controls="reg-atmosphere"><span class="form-card-title"><span class="form-card-number">02</span>雰囲気・人数規模</span><span class="form-card-meta"><span class="form-required">必須項目あり</span><i class="form-chevron"></i></span></button>
+        <div class="form-card-body" id="reg-atmosphere">
+          <div class="form-field"><div class="form-label">雰囲気 <span class="req">＊必須・複数選択可</span></div><div class="form-choice-grid" id="reg-mood"></div></div>
+          <div class="form-field"><div class="form-label">人数・規模 <span class="req">＊必須・単一選択</span></div><div class="form-choice-grid" id="reg-size"></div><span class="form-help">利用人数や宴会の規模に合うものを選択してください。</span></div>
+        </div>
+      </section>
+      <section class="form-card">
+        <button type="button" class="form-card-toggle" aria-expanded="false" aria-controls="reg-rating"><span class="form-card-title"><span class="form-card-number">03</span>評価</span><span class="form-card-meta"><span class="form-required">必須項目あり</span><i class="form-chevron"></i></span></button>
+        <div class="form-card-body" id="reg-rating">
+          <div class="form-field"><div class="form-label">味の評価 <span class="req">＊必須</span></div><div class="form-rating-row" id="reg-taste"></div></div>
+          <div class="form-field"><div class="form-label">店の評価 <span class="req">＊必須</span></div><div class="form-rating-row" id="reg-service"></div><span class="form-help">接客・雰囲気・居心地など、お店全体の評価です。</span></div>
+        </div>
+      </section>
+      <section class="form-card">
+        <button type="button" class="form-card-toggle" aria-expanded="false" aria-controls="reg-conditions"><span class="form-card-title"><span class="form-card-number">04</span>利用条件・設備</span><span class="form-card-meta">任意項目<i class="form-chevron"></i></span></button>
+        <div class="form-card-body" id="reg-conditions">
+          <div class="form-field"><div class="form-label">個室</div><div class="form-choice-grid" id="reg-private"></div></div>
+          <div class="form-field"><div class="form-label">駐車場</div><div class="form-choice-grid" id="reg-parking"></div></div>
+          <div class="form-field"><div class="form-label">予約</div><div class="form-choice-grid" id="reg-reservation"></div></div>
+          <div class="form-field"><div class="form-label">貸切</div><div class="form-choice-grid" id="reg-charter"></div></div>
+          <div class="form-field"><div class="form-label">飲み放題</div><div class="form-choice-grid" id="reg-drink"></div></div>
+          <div class="form-field"><div class="form-label">喫煙</div><div class="form-choice-grid" id="reg-smoking"></div></div>
+        </div>
+      </section>
+      <section class="form-card">
+        <button type="button" class="form-card-toggle" aria-expanded="false" aria-controls="reg-details"><span class="form-card-title"><span class="form-card-number">05</span>営業時間・予算など</span><span class="form-card-meta">任意項目<i class="form-chevron"></i></span></button>
+        <div class="form-card-body" id="reg-details">
+          <p class="form-help form-section-help">分かる範囲で記入、不明な箇所は空白可</p>
+          <div class="form-two-col">
+            <div class="form-field"><label class="form-label" for="reg-hours">営業時間</label><input class="form-input" id="reg-hours" name="hours" placeholder="例：17:00～23:00"></div>
+            <div class="form-field"><label class="form-label" for="reg-closed">定休日</label><input class="form-input" id="reg-closed" name="closed" placeholder="例：日曜日"></div>
+            <div class="form-field"><label class="form-label" for="reg-budget">予算</label><select class="form-select" id="reg-budget" name="budget"><option value="">選択してください</option><option>～1,000円</option><option>1,000～2,000円</option><option>2,000～3,000円</option><option>3,000～5,000円</option><option>5,000～7,000円</option><option>7,000～10,000円</option><option>10,000円～</option><option>不明</option></select></div>
+          </div>
+        </div>
+      </section>
+      <section class="form-card">
+        <button type="button" class="form-card-toggle" aria-expanded="false" aria-controls="reg-comment"><span class="form-card-title"><span class="form-card-number">06</span>紹介コメント・登録者</span><span class="form-card-meta"><span class="form-required">登録者は必須</span><i class="form-chevron"></i></span></button>
+        <div class="form-card-body" id="reg-comment">
+          <div class="form-field"><label class="form-label" for="reg-comment-text">紹介コメント</label><textarea class="form-textarea" id="reg-comment-text" name="comment" maxlength="200" placeholder="お店の感想、おすすめポイントや料理、どんな場面に向いているかなど…何でも可！"></textarea><span class="form-help"><span id="reg-comment-count">0</span> / 200文字</span></div>
+          <div class="form-field"><label class="form-label" for="reg-contributor">登録者 <span class="req">＊必須</span></label><input class="form-input" id="reg-contributor" name="contributor" required maxlength="40" placeholder="例：えがログ"></div>
+        </div>
+      </section>
+      <section class="form-card">
+        <button type="button" class="form-card-toggle" aria-expanded="false" aria-controls="reg-photos"><span class="form-card-title"><span class="form-card-number">07</span>写真</span><span class="form-card-meta">任意項目<i class="form-chevron"></i></span></button>
+        <div class="form-card-body" id="reg-photos">
+          <div class="form-photo-note">お店の外観・店内・料理など、最大3枚まで掲載できます。<br>写真アップロード機能は次の工程で接続します。</div>
+        </div>
+      </section>
+      <div class="form-feedback" id="register-feedback" role="alert"></div>
+      <div class="form-bottom"><small>※ この段階では入力画面の確認用です。申請データの送信はまだ行いません。</small><button class="form-submit" type="submit">入力内容を確認する →</button></div>
+    </form>
+  </main>
+
   <main id="detail-main" class="detail-main" hidden>
     <div class="detail-topbar">
       <span class="detail-kicker">RESTAURANT DETAILS</span>
@@ -1105,7 +1238,7 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <span class="footer-brand">えがログ</span>
-      <span class="footer-version">Ver.6.4</span>
+      <span class="footer-version">Ver.6.6</span>
     </div>
   </footer>
 
@@ -1114,7 +1247,7 @@
   <script>
     "use strict";
 
-    // Ver.6.1：Ver.6.0を基に、該当店舗数のリアルタイム表示と店舗詳細ページを追加。
+    // Ver.6.6：登録フォームの選択方式・必須項目・アコーディオン動作を調整。
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwPRUrUK7aFteIdXPaIGkrxpLIrv3TfHwSP2AQmB5oSgzbIj39d6IXkjmiwwYVb73hk/exec";
     const OPTIONS = {
       genre: ["うどん", "ラーメン", "居酒屋", "焼肉", "寿司", "和食", "洋食", "中華", "カレー", "定食", "カフェ", "その他"],
@@ -1646,9 +1779,90 @@
     document.addEventListener("keydown", event => {
       if (event.key === "Escape" && !$("#photo-viewer").hidden) closePhotoViewer();
     });
-    $("#register-button").addEventListener("click", () => {
-      showToast("お店の登録フォームは、次の制作段階で追加します。");
+    function showRegisterPage() {
+      $("#search-main").hidden = true;
+      $("#detail-main").hidden = true;
+      $("#register-main").hidden = false;
+      window.scrollTo(0, 0);
+    }
+    function showSearchPage() {
+      $("#register-main").hidden = true;
+      $("#detail-main").hidden = true;
+      $("#search-main").hidden = false;
+      window.scrollTo(0, 0);
+    }
+    function addRegisterChoices(containerId, values, name, type = "checkbox") {
+      const container = $("#" + containerId);
+      values.forEach((value, index) => {
+        const label = document.createElement("label");
+        label.className = "form-choice";
+        const input = document.createElement("input");
+        input.type = type; input.name = name; input.value = value;
+        if (type === "radio") input.required = true;
+        const span = document.createElement("span"); span.textContent = value;
+        label.append(input, span); container.appendChild(label);
+      });
+    }
+    function addRatingChoices(containerId, name) {
+      const container = $("#" + containerId);
+      for (let n = 1; n <= 10; n++) {
+        const value = (n / 2).toFixed(1);
+        const label = document.createElement("label");
+        const input = document.createElement("input"); input.type = "radio"; input.name = name; input.value = value; input.required = true;
+        const span = document.createElement("span"); span.textContent = value;
+        label.append(input, span); container.appendChild(label);
+      }
+    }
+    $("#register-button").addEventListener("click", showRegisterPage);
+    $("#register-back").addEventListener("click", showSearchPage);
+    $$(".form-card-toggle").forEach(button => button.addEventListener("click", () => {
+      const open = button.getAttribute("aria-expanded") === "true";
+      $$(".form-card-toggle").forEach(other => {
+        other.setAttribute("aria-expanded", "false");
+        $("#" + other.getAttribute("aria-controls")).classList.remove("open");
+      });
+      if (!open) {
+        button.setAttribute("aria-expanded", "true");
+        $("#" + button.getAttribute("aria-controls")).classList.add("open");
+      }
+    }));
+    $("#reg-comment-text").addEventListener("input", event => { $("#reg-comment-count").textContent = String(event.target.value.length); });
+    $("#store-register-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const requiredChecks = [
+        ["#reg-name", "店名"], ["#reg-contributor", "登録者"]
+      ];
+      const missing = requiredChecks.filter(([selector]) => !$(selector).value.trim()).map(([, label]) => label);
+      const requiredGroups = [["genre", "ジャンル"], ["area", "エリア"], ["mood", "雰囲気"], ["size", "人数・規模"], ["taste", "味の評価"], ["service", "店の評価"]];
+      requiredGroups.forEach(([name, label]) => { if (!form.querySelector(`[name="${name}"]:checked`)) missing.push(label); });
+      const feedback = $("#register-feedback");
+      if (missing.length) {
+        feedback.textContent = "必須項目を入力してください：" + missing.join("・");
+        feedback.classList.add("show");
+        const first = missing[0];
+        const card = Array.from($$(".form-card")).find(el => el.textContent.includes(first));
+        if (card) { $$(".form-card-toggle").forEach(btn => { btn.setAttribute("aria-expanded", "false"); $("#" + btn.getAttribute("aria-controls")).classList.remove("open"); }); const btn = $(".form-card-toggle", card); btn.setAttribute("aria-expanded", "true"); $("#" + btn.getAttribute("aria-controls")).classList.add("open"); }
+        feedback.scrollIntoView({behavior:"smooth", block:"center"});
+        return;
+      }
+      feedback.textContent = "入力内容の確認画面・申請送信機能は、次の工程で追加します。現時点ではデータは送信されていません。";
+      feedback.classList.add("show");
+      feedback.scrollIntoView({behavior:"smooth", block:"center"});
     });
+
+    addRegisterChoices("reg-genre", OPTIONS.genre, "genre");
+    addRegisterChoices("reg-area", [...OPTIONS.areaCity, ...OPTIONS.areaPrefecture.map(x => x.value)], "area", "radio");
+    addRegisterChoices("reg-mood", OPTIONS.mood, "mood");
+    addRegisterChoices("reg-size", OPTIONS.size, "size", "radio");
+    addRatingChoices("reg-taste", "taste");
+    addRatingChoices("reg-service", "service");
+    addRegisterChoices("reg-private", ["個室あり", "個室なし"], "privateRoom", "radio");
+    addRegisterChoices("reg-parking", ["駐車場あり", "駐車場なし"], "parking", "radio");
+    addRegisterChoices("reg-reservation", ["予約可", "予約したほうがいい", "予約不可"], "reservation", "radio");
+    addRegisterChoices("reg-charter", ["貸切あり", "貸切なし"], "charter", "radio");
+    addRegisterChoices("reg-drink", ["飲み放題あり", "飲み放題なし"], "allYouCanDrink", "radio");
+    addRegisterChoices("reg-smoking", ["喫煙可", "禁煙", "不明"], "smoking", "radio");
 
     buildOptions();
     updateCounts();

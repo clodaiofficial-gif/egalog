@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#101e33">
-  <title>えがログ Ver.6.0｜お店を探す</title>
+  <title>えがログ Ver.6.1｜お店を探す</title>
   <style>
     :root {
       --navy: #101e33;
@@ -560,7 +560,9 @@
       border-radius: 10px;
       box-shadow: 0 5px 18px rgba(0, 0, 0, .13);
       min-width: 0;
+      cursor: pointer;
     }
+    .result-card:focus-visible { outline: 3px solid rgba(184,227,75,.8); outline-offset: 3px; }
     .result-photo {
       width: 112px;
       aspect-ratio: 1 / 1;
@@ -630,6 +632,194 @@
       .result-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .result-card { grid-template-columns: 96px minmax(0, 1fr); }
       .result-photo, .photo-placeholder { width: 96px; }
+    }
+
+    .search-action-group {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      flex: 0 1 auto;
+    }
+    .match-count {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 66px;
+      color: #8793a2;
+      line-height: 1.15;
+      white-space: nowrap;
+      text-align: center;
+    }
+    .match-count strong { font-size: 1.1rem; font-weight: 850; font-variant-numeric: tabular-nums; }
+    .match-count span { margin-top: 3px; font-size: .62rem; font-weight: 700; }
+    .match-count.active { color: var(--text); }
+
+    .detail-main {
+      width: min(100% - 32px, 1040px);
+      margin: 0 auto;
+      padding: 24px 0 46px;
+    }
+    .detail-main[hidden], .photo-viewer[hidden] { display: none !important; }
+    .detail-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 13px;
+      color: #b8d0e8;
+    }
+    .detail-kicker { font-size: .68rem; font-weight: 800; letter-spacing: .18em; }
+    .detail-close, .photo-viewer-close {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 9px;
+      color: #fff;
+      background: rgba(255,255,255,.10);
+      font-size: 2rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .detail-heading-card, .detail-section {
+      background: #fff;
+      border: 1px solid rgba(216,224,233,.95);
+      border-radius: 11px;
+      box-shadow: 0 7px 22px rgba(0,0,0,.13);
+    }
+    .detail-heading-card { padding: 22px 24px 18px; margin-bottom: 15px; }
+    .detail-name {
+      margin: 0 0 11px;
+      color: var(--navy);
+      font-size: clamp(1.45rem, 3vw, 1.9rem);
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+    .detail-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+    .detail-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 29px;
+      padding: 5px 10px;
+      color: #42556c;
+      background: #edf1f5;
+      border: 1px solid #dce3eb;
+      border-radius: 5px;
+      font-size: .75rem;
+      line-height: 1.35;
+    }
+    .detail-rating {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 17px;
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px solid #edf0f4;
+      color: #718096;
+      font-size: .77rem;
+    }
+    .detail-rating span { white-space: nowrap; }
+    .detail-rating b { margin-left: 4px; color: #597c18; font-size: .9rem; font-weight: 750; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 15px;
+    }
+    .detail-section { min-width: 0; padding: 18px 20px; }
+    .detail-section h2 {
+      margin: 0 0 13px;
+      color: var(--navy);
+      font-size: .96rem;
+      font-weight: 850;
+    }
+    .detail-info-list { display: grid; grid-template-columns: 1fr; gap: 0; margin: 0; }
+    .detail-info-row {
+      display: grid;
+      grid-template-columns: 104px minmax(0,1fr);
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid #edf0f4;
+      font-size: .82rem;
+    }
+    .detail-info-row:first-child { padding-top: 0; }
+    .detail-info-row:last-child { padding-bottom: 0; border-bottom: 0; }
+    .detail-info-row dt { color: #718096; }
+    .detail-info-row dd { margin: 0; color: #26364a; overflow-wrap: anywhere; }
+    .detail-info-row a { color: #3c638d; font-weight: 700; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .detail-comment-section { grid-column: 1 / -1; }
+    .detail-comment { margin: 0; color: #35465a; font-size: .88rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .detail-contributor { margin: 12px 0 0; color: #7a8797; font-size: .72rem; }
+    .detail-photos-section { margin-top: 15px; }
+    .detail-photos {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 2px 2px 10px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .detail-photo {
+      flex: 0 0 min(260px, 72vw);
+      width: min(260px, 72vw);
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #e5e9ee;
+      cursor: zoom-in;
+      scroll-snap-align: start;
+    }
+    .detail-bottom-action { display: flex; justify-content: center; margin-top: 22px; }
+    .detail-back-button {
+      min-height: 46px;
+      padding: 10px 22px;
+      color: #fff;
+      background: var(--navy-2);
+      border: 1px solid rgba(184,227,75,.55);
+      border-radius: 7px;
+      font-size: .85rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .photo-viewer {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 18px 24px;
+      background: rgba(5,12,22,.94);
+    }
+    .photo-viewer img {
+      display: block;
+      max-width: min(100%, 1200px);
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 5px;
+    }
+    .photo-viewer-close {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      width: 46px;
+      height: 46px;
+      background: rgba(255,255,255,.12);
+    }
+    @media (max-width: 650px) {
+      .detail-main { width: calc(100% - 24px); padding-top: 17px; }
+      .detail-heading-card { padding: 18px 16px 15px; }
+      .detail-grid { grid-template-columns: 1fr; gap: 11px; }
+      .detail-section { padding: 16px; }
+      .detail-comment-section { grid-column: auto; }
+      .detail-info-row { grid-template-columns: 88px minmax(0,1fr); gap: 8px; }
+      .detail-photo { flex-basis: min(230px, 78vw); width: min(230px, 78vw); }
+      .panel-actions { align-items: center; }
+      .search-action-group { gap: 7px; }
+      .match-count { min-width: 48px; }
+      .match-count strong { font-size: 1rem; }
+      .match-count span { font-size: .56rem; }
+      .search-button { min-width: 0; padding-left: 10px; padding-right: 10px; }
     }
 
     .site-footer {
@@ -830,9 +1020,15 @@
 
       <div class="panel-actions">
         <button class="clear-button" id="clear-button" type="button">すべて解除</button>
-        <button class="search-button" id="search-button" type="button" disabled>
-          <span>この条件で検索</span><span class="search-arrow" aria-hidden="true">→</span>
-        </button>
+        <div class="search-action-group">
+          <div class="match-count" id="match-count" aria-live="polite">
+            <strong id="match-count-number">--</strong>
+            <span id="match-count-label">全店舗</span>
+          </div>
+          <button class="search-button" id="search-button" type="button" disabled>
+            <span>この条件で検索</span><span class="search-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -853,10 +1049,53 @@
     </section>
   </main>
 
+  <main id="detail-main" class="detail-main" hidden>
+    <div class="detail-topbar">
+      <span class="detail-kicker">RESTAURANT DETAILS</span>
+      <button type="button" class="detail-close" id="detail-close" aria-label="検索結果へ戻る">×</button>
+    </div>
+    <section class="detail-heading-card">
+      <h1 class="detail-name" id="detail-name"></h1>
+      <div class="detail-tags" id="detail-primary-tags"></div>
+      <div class="detail-rating" id="detail-rating"></div>
+    </section>
+    <div class="detail-grid">
+      <section class="detail-section">
+        <h2>雰囲気・人数規模</h2>
+        <div class="detail-tags" id="detail-atmosphere"></div>
+      </section>
+      <section class="detail-section">
+        <h2>お店の基本情報</h2>
+        <dl class="detail-info-list" id="detail-info"></dl>
+      </section>
+      <section class="detail-section">
+        <h2>利用条件</h2>
+        <div class="detail-tags" id="detail-conditions"></div>
+      </section>
+      <section class="detail-section detail-comment-section" id="detail-comment-section" hidden>
+        <h2>紹介コメント</h2>
+        <p class="detail-comment" id="detail-comment"></p>
+        <p class="detail-contributor" id="detail-contributor"></p>
+      </section>
+    </div>
+    <section class="detail-section detail-photos-section" id="detail-photos-section" hidden>
+      <h2>写真</h2>
+      <div class="detail-photos" id="detail-photos"></div>
+    </section>
+    <div class="detail-bottom-action">
+      <button type="button" class="detail-back-button" id="detail-back-bottom">← 検索結果へ</button>
+    </div>
+  </main>
+
+  <div class="photo-viewer" id="photo-viewer" hidden role="dialog" aria-modal="true" aria-label="写真の拡大表示">
+    <button type="button" class="photo-viewer-close" id="photo-viewer-close" aria-label="写真を閉じる">×</button>
+    <img id="photo-viewer-image" alt="">
+  </div>
+
   <footer class="site-footer">
     <div class="footer-inner">
       <span class="footer-brand">えがログ</span>
-      <span class="footer-version">Ver.6.0</span>
+      <span class="footer-version">Ver.6.1</span>
     </div>
   </footer>
 
@@ -865,7 +1104,7 @@
   <script>
     "use strict";
 
-    // Ver.6.0：Google Apps Scriptから店舗データを取得し、条件検索・結果表示を行います。
+    // Ver.6.1：Ver.6.0を基に、該当店舗数のリアルタイム表示と店舗詳細ページを追加。
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwPRUrUK7aFteIdXPaIGkrxpLIrv3TfHwSP2AQmB5oSgzbIj39d6IXkjmiwwYVb73hk/exec";
     const OPTIONS = {
       genre: ["うどん", "ラーメン", "居酒屋", "焼肉", "寿司", "和食", "洋食", "中華", "カレー", "定食", "カフェ", "その他"],
@@ -896,6 +1135,9 @@
     };
     let stores = [];
     let dataLoaded = false;
+    let activeStore = null;
+    let savedSearchScrollY = 0;
+    let photoViewerReturnFocus = null;
 
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -957,6 +1199,7 @@
         button.setAttribute("aria-pressed", "true");
       }
       updateCounts();
+      updateMatchCount();
       $("#results").classList.remove("visible");
     }
 
@@ -979,6 +1222,16 @@
       $("#search-button").disabled = total === 0;
     }
 
+    function updateMatchCount() {
+      const hasSelection = getSelectedCount() > 0;
+      const count = dataLoaded
+        ? (hasSelection ? stores.filter(matchesStore).length : stores.length)
+        : "--";
+      $("#match-count-number").textContent = String(count);
+      $("#match-count-label").textContent = hasSelection ? "該当店舗" : "全店舗";
+      $("#match-count").classList.toggle("active", hasSelection);
+    }
+
     function clearAll() {
       Object.keys(selected).forEach(key => selected[key].clear());
       $$(".tag.selected").forEach(tag => {
@@ -986,6 +1239,7 @@
         tag.setAttribute("aria-pressed", "false");
       });
       updateCounts();
+      updateMatchCount();
       $("#results").classList.remove("visible");
       showToast("選択した条件をすべて解除しました");
     }
@@ -1065,6 +1319,16 @@
     function createResultCard(store) {
       const card = document.createElement("article");
       card.className = "result-card";
+      card.tabIndex = 0;
+      card.setAttribute("role", "button");
+      card.setAttribute("aria-label", safeText(store["店名"], "お店") + "の詳細を見る");
+      card.addEventListener("click", () => openDetail(store));
+      card.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openDetail(store);
+        }
+      });
 
       const photoUrl = safeText(store["写真URL1"]).trim();
       if (photoUrl) {
@@ -1117,6 +1381,185 @@
       return card;
     }
 
+    function appendDetailTag(container, text) {
+      if (!text) return;
+      const tag = document.createElement("span");
+      tag.className = "detail-tag";
+      tag.textContent = text;
+      container.appendChild(tag);
+    }
+
+    function addInfoRow(container, label, value, isUrl = false) {
+      const clean = safeText(value).trim();
+      if (!clean) return;
+      const row = document.createElement("div");
+      row.className = "detail-info-row";
+      const dt = document.createElement("dt");
+      dt.textContent = label;
+      const dd = document.createElement("dd");
+      if (isUrl) {
+        let url;
+        try {
+          url = new URL(clean);
+          if (!["http:", "https:"].includes(url.protocol)) throw new Error("unsupported protocol");
+        } catch (_) {
+          try { url = new URL("https://" + clean); }
+          catch (_) { url = null; }
+        }
+        if (url) {
+          const link = document.createElement("a");
+          link.href = url.href;
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = clean;
+          dd.appendChild(link);
+        } else {
+          dd.textContent = clean;
+        }
+      } else {
+        dd.textContent = clean;
+      }
+      row.append(dt, dd);
+      container.appendChild(row);
+    }
+
+    function normalizeCondition(field, raw) {
+      const value = safeText(raw).trim();
+      if (!value) return "";
+      if (field === "喫煙") return value;
+      if (value.startsWith(field)) return value;
+      return field + value;
+    }
+
+    function renderDetail(store) {
+      $("#detail-name").textContent = safeText(store["店名"], "店名未登録");
+      const primary = $("#detail-primary-tags");
+      primary.replaceChildren();
+      [...fieldValues(store, "ジャンル"), ...fieldValues(store, "エリア")].forEach(v => appendDetailTag(primary, v));
+
+      const rating = $("#detail-rating");
+      rating.replaceChildren();
+      [
+        ["味", store["味評価"]],
+        ["店", store["店評価"]],
+        ["総合", store["総合評価"]]
+      ].forEach(([label, value]) => {
+        if (value === "" || value === null || value === undefined) return;
+        const span = document.createElement("span");
+        span.append(document.createTextNode(label));
+        const b = document.createElement("b");
+        const n = Number(value);
+        b.textContent = Number.isFinite(n) ? n.toFixed(1) : String(value);
+        span.appendChild(b);
+        if (label === "総合") span.appendChild(document.createTextNode(" / 10.0"));
+        rating.appendChild(span);
+      });
+
+      const atmosphere = $("#detail-atmosphere");
+      atmosphere.replaceChildren();
+      [...fieldValues(store, "雰囲気"), ...fieldValues(store, "人数規模")].forEach(v => appendDetailTag(atmosphere, v));
+      atmosphere.closest(".detail-section").hidden = atmosphere.childElementCount === 0;
+
+      const info = $("#detail-info");
+      info.replaceChildren();
+      addInfoRow(info, "住所", store["所在地"]);
+      addInfoRow(info, "予算", store["予算"]);
+      addInfoRow(info, "営業時間", store["営業時間"]);
+      addInfoRow(info, "定休日", store["定休日"]);
+      addInfoRow(info, "URL", store["URL"], true);
+      info.closest(".detail-section").hidden = info.childElementCount === 0;
+
+      const conditions = $("#detail-conditions");
+      conditions.replaceChildren();
+      [
+        ["個室", store["個室"]],
+        ["駐車場", store["駐車場"]],
+        ["予約", store["予約"]],
+        ["貸切", store["貸切"]],
+        ["飲み放題", store["飲み放題"]],
+        ["喫煙", store["喫煙"]]
+      ].forEach(([field, value]) => {
+        const normalized = normalizeCondition(field, value);
+        if (normalized) appendDetailTag(conditions, normalized);
+      });
+      conditions.closest(".detail-section").hidden = conditions.childElementCount === 0;
+
+      const comment = safeText(store["紹介コメント"]).trim();
+      const contributor = safeText(store["紹介者"]).trim();
+      const commentSection = $("#detail-comment-section");
+      commentSection.hidden = !comment && !contributor;
+      $("#detail-comment").textContent = comment;
+      $("#detail-comment").hidden = !comment;
+      $("#detail-comment-section h2").textContent = comment ? "紹介コメント" : "紹介者";
+      $("#detail-contributor").textContent = contributor ? "紹介：" + contributor : "";
+      $("#detail-contributor").hidden = !contributor;
+
+      const photos = $("#detail-photos");
+      photos.replaceChildren();
+      const urls = [store["写真URL1"], store["写真URL2"], store["写真URL3"]]
+        .map(v => safeText(v).trim()).filter(Boolean);
+      urls.forEach((url, index) => {
+        const img = document.createElement("img");
+        img.className = "detail-photo";
+        img.src = url;
+        img.alt = safeText(store["店名"], "お店") + "の写真 " + (index + 1);
+        img.loading = "lazy";
+        img.addEventListener("error", () => img.remove(), { once: true });
+        img.addEventListener("click", () => openPhotoViewer(img));
+        photos.appendChild(img);
+      });
+      $("#detail-photos-section").hidden = urls.length === 0;
+    }
+
+    function openDetail(store) {
+      activeStore = store;
+      savedSearchScrollY = window.scrollY;
+      renderDetail(store);
+      $("#search-main").hidden = true;
+      $("#detail-main").hidden = false;
+      document.body.classList.add("detail-open");
+      history.pushState({ egarlogDetail: true }, "", "#store-" + encodeURIComponent(safeText(store["店舗ID"], "detail")));
+      window.scrollTo(0, 0);
+      $("#detail-close").focus({ preventScroll: true });
+    }
+
+    function closeDetail(fromHistory = false) {
+      if (!activeStore) return;
+      if (!fromHistory && history.state && history.state.egarlogDetail) {
+        history.back();
+        return;
+      }
+      activeStore = null;
+      $("#detail-main").hidden = true;
+      $("#search-main").hidden = false;
+      document.body.classList.remove("detail-open");
+      window.scrollTo(0, savedSearchScrollY);
+    }
+
+    function openPhotoViewer(img) {
+      photoViewerReturnFocus = img;
+      const viewer = $("#photo-viewer");
+      const viewerImage = $("#photo-viewer-image");
+      viewerImage.src = img.src;
+      viewerImage.alt = img.alt;
+      viewer.hidden = false;
+      $("#photo-viewer-close").focus();
+    }
+
+    function closePhotoViewer() {
+      const viewer = $("#photo-viewer");
+      if (viewer.hidden) return;
+      viewer.hidden = true;
+      $("#photo-viewer-image").removeAttribute("src");
+      if (photoViewerReturnFocus) photoViewerReturnFocus.focus({ preventScroll: true });
+      photoViewerReturnFocus = null;
+    }
+
+    window.addEventListener("popstate", () => {
+      if (!$("#photo-viewer").hidden) closePhotoViewer();
+      if (activeStore) closeDetail(true);
+    });
+
     function search() {
       if (getSelectedCount() === 0) return;
       if (!dataLoaded) {
@@ -1164,6 +1607,7 @@
           ? "お店データを読み込みました（" + stores.length + "件）"
           : "お店データはまだ登録されていません。";
         status.classList.add("ready");
+        updateMatchCount();
       } catch (error) {
         console.error("店舗データの取得に失敗しました:", error);
         status.textContent = "お店データを読み込めませんでした。通信制限の可能性があります。";
@@ -1183,12 +1627,22 @@
 
     $("#clear-button").addEventListener("click", clearAll);
     $("#search-button").addEventListener("click", search);
+    $("#detail-close").addEventListener("click", () => closeDetail(false));
+    $("#detail-back-bottom").addEventListener("click", () => closeDetail(false));
+    $("#photo-viewer-close").addEventListener("click", closePhotoViewer);
+    $("#photo-viewer").addEventListener("click", event => {
+      if (event.target.id === "photo-viewer") closePhotoViewer();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !$("#photo-viewer").hidden) closePhotoViewer();
+    });
     $("#register-button").addEventListener("click", () => {
       showToast("お店の登録フォームは、次の制作段階で追加します。");
     });
 
     buildOptions();
     updateCounts();
+    updateMatchCount();
     loadStores();
   </script>
 </body>

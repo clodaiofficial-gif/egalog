@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#101e33">
-  <title>えがログ Ver.6.2｜お店を探す</title>
+  <title>えがログ Ver.6.4｜お店を探す</title>
   <style>
     :root {
       --navy: #101e33;
@@ -724,8 +724,10 @@
     .detail-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0,1fr));
+      align-items: start;
       gap: 15px;
     }
+    .detail-column { display: flex; flex-direction: column; gap: 15px; min-width: 0; }
     .detail-section { min-width: 0; padding: 18px 20px; }
     .detail-section h2 {
       margin: 0 0 13px;
@@ -747,7 +749,7 @@
     .detail-info-row dt { color: #718096; }
     .detail-info-row dd { margin: 0; color: #26364a; overflow-wrap: anywhere; }
     .detail-info-row a { color: #3c638d; font-weight: 700; text-decoration-thickness: 1px; text-underline-offset: 3px; }
-    .detail-comment-section { grid-column: 1 / -1; }
+    .detail-comment-section { margin-top: 15px; }
     .detail-comment { margin: 0; color: #35465a; font-size: .88rem; white-space: pre-wrap; overflow-wrap: anywhere; }
     .detail-contributor { margin: 12px 0 0; color: #7a8797; font-size: .72rem; }
     .detail-photos-section { margin-top: 15px; }
@@ -810,6 +812,10 @@
       .detail-main { width: calc(100% - 24px); padding-top: 17px; }
       .detail-heading-card { padding: 18px 16px 15px; }
       .detail-grid { grid-template-columns: 1fr; gap: 11px; }
+      .detail-column { display: contents; }
+      #detail-atmosphere-section { order: 1; }
+      #detail-info-section { order: 2; }
+      #detail-conditions-section { order: 3; }
       .detail-section { padding: 16px; }
       .detail-comment-section { grid-column: auto; }
       .detail-info-row { grid-template-columns: 88px minmax(0,1fr); gap: 8px; }
@@ -1060,24 +1066,28 @@
       <div class="detail-rating" id="detail-rating"></div>
     </section>
     <div class="detail-grid">
-      <section class="detail-section">
-        <h2>雰囲気・人数規模</h2>
-        <div class="detail-tags" id="detail-atmosphere"></div>
-      </section>
-      <section class="detail-section">
-        <h2>お店の基本情報</h2>
-        <dl class="detail-info-list" id="detail-info"></dl>
-      </section>
-      <section class="detail-section">
-        <h2>利用条件</h2>
-        <div class="detail-tags" id="detail-conditions"></div>
-      </section>
-      <section class="detail-section detail-comment-section" id="detail-comment-section" hidden>
-        <h2>紹介コメント</h2>
-        <p class="detail-comment" id="detail-comment"></p>
-        <p class="detail-contributor" id="detail-contributor"></p>
-      </section>
+      <div class="detail-column">
+        <section class="detail-section" id="detail-atmosphere-section">
+          <h2>雰囲気・人数規模</h2>
+          <div class="detail-tags" id="detail-atmosphere"></div>
+        </section>
+        <section class="detail-section" id="detail-conditions-section">
+          <h2>利用条件</h2>
+          <div class="detail-tags" id="detail-conditions"></div>
+        </section>
+      </div>
+      <div class="detail-column">
+        <section class="detail-section" id="detail-info-section">
+          <h2>お店の基本情報</h2>
+          <dl class="detail-info-list" id="detail-info"></dl>
+        </section>
+      </div>
     </div>
+    <section class="detail-section detail-comment-section" id="detail-comment-section" hidden>
+      <h2>紹介コメント</h2>
+      <p class="detail-comment" id="detail-comment"></p>
+      <p class="detail-contributor" id="detail-contributor"></p>
+    </section>
     <section class="detail-section detail-photos-section" id="detail-photos-section" hidden>
       <h2>写真</h2>
       <div class="detail-photos" id="detail-photos"></div>
@@ -1095,7 +1105,7 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <span class="footer-brand">えがログ</span>
-      <span class="footer-version">Ver.6.2</span>
+      <span class="footer-version">Ver.6.4</span>
     </div>
   </footer>
 

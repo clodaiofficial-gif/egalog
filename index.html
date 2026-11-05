@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#101e33">
-  <title>えがログ Ver.6.6｜お店を探す</title>
+  <title>えがログ Ver.6.7｜お店を探す</title>
   <style>
     :root {
       --navy: #101e33;
@@ -943,6 +943,31 @@
     }
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+    .register-confirm-shell { margin-top: 18px; padding: 22px; background:#fff; border:1px solid var(--line); border-radius:10px; box-shadow:0 8px 24px rgba(16,30,51,.06); }
+    .confirm-head { margin-bottom:18px; }
+    .confirm-head h2 { margin:4px 0 6px; color:var(--navy); font-size:1.35rem; }
+    .confirm-head p:last-child { margin:0; color:#718096; font-size:.82rem; }
+    .confirm-list { display:grid; gap:0; border-top:1px solid var(--line); }
+    .confirm-row { display:grid; grid-template-columns: minmax(112px,  .28fr) 1fr; gap:16px; padding:12px 4px; border-bottom:1px solid var(--line); }
+    .confirm-label { color:#68788c; font-size:.78rem; font-weight:750; }
+    .confirm-value { color:#1c2c42; font-size:.84rem; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .confirm-feedback { display:none; margin-top:16px; padding:13px 15px; border-radius:7px; background:#eef5ff; color:#23466e; font-size:.82rem; line-height:1.65; }
+    .confirm-feedback.show { display:block; }
+    .confirm-feedback.error { background:#fff1ee; color:#913e31; }
+    .confirm-actions { display:flex; justify-content:space-between; gap:12px; margin-top:20px; }
+    .confirm-edit,.confirm-send { min-height:44px; border-radius:7px; padding:11px 18px; font-weight:800; cursor:pointer; }
+    .confirm-edit { border:1px solid #cbd5e1; background:#fff; color:#34465d; }
+    .confirm-send { border:0; background:linear-gradient(180deg,#c8ef65,var(--lime)); color:var(--navy); box-shadow:0 3px 0 #87ae2d; }
+    .confirm-send:disabled { opacity:.55; cursor:wait; }
+    .confirm-footnote { margin:14px 0 0; color:#758396; font-size:.72rem; line-height:1.6; }
+    .submit-frame { position:absolute; width:1px; height:1px; border:0; opacity:0; pointer-events:none; }
+    @media (max-width: 480px) {
+      .register-confirm-shell { padding:16px 13px; }
+      .confirm-row { grid-template-columns: 96px 1fr; gap:10px; padding:11px 2px; }
+      .confirm-actions { flex-direction:column-reverse; }
+      .confirm-edit,.confirm-send { width:100%; }
+    }
+
     @media (min-width: 760px) {
       main { padding-top: 40px; }
       .category-list { padding-left: 22px; padding-right: 22px; }
@@ -1129,7 +1154,7 @@
         <div class="form-card-body open" id="reg-basic">
           <div class="form-field"><label class="form-label" for="reg-name">店名 <span class="req">＊必須</span></label><input class="form-input" id="reg-name" name="storeName" required maxlength="100" placeholder="例：えがログ食堂"></div>
           <div class="form-field"><div class="form-label">ジャンル <span class="req">＊必須・複数選択可</span></div><div class="form-choice-grid" id="reg-genre"></div></div>
-          <div class="form-field"><div class="form-label">エリア <span class="req">＊必須・単一選択</span></div><div class="form-choice-grid" id="reg-area"></div></div>
+          <div class="form-field"><div class="form-label">エリア <span class="req">＊必須</span></div><div class="form-choice-grid" id="reg-area"></div></div>
           <div class="form-field"><label class="form-label" for="reg-address">所在地・住所</label><input class="form-input" id="reg-address" name="address" placeholder="例：熊本市中央区○○（空白でも可）"></div>
           <div class="form-field"><label class="form-label" for="reg-url">お店のURL</label><input class="form-input" id="reg-url" name="url" type="url" placeholder="https://...（空白でも可）"></div>
         </div>
@@ -1138,7 +1163,7 @@
         <button type="button" class="form-card-toggle" aria-expanded="false" aria-controls="reg-atmosphere"><span class="form-card-title"><span class="form-card-number">02</span>雰囲気・人数規模</span><span class="form-card-meta"><span class="form-required">必須項目あり</span><i class="form-chevron"></i></span></button>
         <div class="form-card-body" id="reg-atmosphere">
           <div class="form-field"><div class="form-label">雰囲気 <span class="req">＊必須・複数選択可</span></div><div class="form-choice-grid" id="reg-mood"></div></div>
-          <div class="form-field"><div class="form-label">人数・規模 <span class="req">＊必須・単一選択</span></div><div class="form-choice-grid" id="reg-size"></div><span class="form-help">利用人数や宴会の規模に合うものを選択してください。</span></div>
+          <div class="form-field"><div class="form-label">人数・規模 <span class="req">＊必須</span></div><div class="form-choice-grid" id="reg-size"></div><span class="form-help">利用人数や宴会の規模に合うものを選択してください。</span></div>
         </div>
       </section>
       <section class="form-card">
@@ -1180,12 +1205,23 @@
       <section class="form-card">
         <button type="button" class="form-card-toggle" aria-expanded="false" aria-controls="reg-photos"><span class="form-card-title"><span class="form-card-number">07</span>写真</span><span class="form-card-meta">任意項目<i class="form-chevron"></i></span></button>
         <div class="form-card-body" id="reg-photos">
-          <div class="form-photo-note">お店の外観・店内・料理など、最大3枚まで掲載できます。<br>写真アップロード機能は次の工程で接続します。</div>
+          <div class="form-photo-note">お店の外観・店内・料理など、最大3枚まで掲載できます。<br>写真の登録機能は現在準備中のため、この画面からはまだ追加できません。</div>
         </div>
       </section>
       <div class="form-feedback" id="register-feedback" role="alert"></div>
-      <div class="form-bottom"><small>※ この段階では入力画面の確認用です。申請データの送信はまだ行いません。</small><button class="form-submit" type="submit">入力内容を確認する →</button></div>
+      <div class="form-bottom"><small>入力内容を確認してから申請できます。</small><button class="form-submit" type="submit">入力内容を確認する →</button></div>
     </form>
+    <section class="register-confirm-shell" id="register-confirm" hidden aria-live="polite">
+      <div class="confirm-head"><p class="eyebrow">CHECK YOUR APPLICATION</p><h2>入力内容の確認</h2><p>内容に間違いがないか確認してください。</p></div>
+      <div class="confirm-list" id="confirm-list"></div>
+      <div class="confirm-feedback" id="confirm-feedback" role="status" aria-live="polite"></div>
+      <div class="confirm-actions">
+        <button type="button" class="confirm-edit" id="confirm-edit">← 入力画面に戻る</button>
+        <button type="button" class="confirm-send" id="confirm-send">この内容で申請する →</button>
+      </div>
+      <p class="confirm-footnote">申請後は管理者が内容を確認し、承認後にサイトへ掲載されます。</p>
+    </section>
+    <iframe name="egalog-submit-frame" id="egalog-submit-frame" title="申請送信" class="submit-frame" aria-hidden="true"></iframe>
   </main>
 
   <main id="detail-main" class="detail-main" hidden>
@@ -1238,7 +1274,7 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <span class="footer-brand">えがログ</span>
-      <span class="footer-version">Ver.6.6</span>
+      <span class="footer-version">Ver.6.7</span>
     </div>
   </footer>
 
@@ -1247,7 +1283,7 @@
   <script>
     "use strict";
 
-    // Ver.6.6：登録フォームの選択方式・必須項目・アコーディオン動作を調整。
+    // Ver.6.7：登録フォームの選択方式・必須項目・アコーディオン動作を調整。
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwPRUrUK7aFteIdXPaIGkrxpLIrv3TfHwSP2AQmB5oSgzbIj39d6IXkjmiwwYVb73hk/exec";
     const OPTIONS = {
       genre: ["うどん", "ラーメン", "居酒屋", "焼肉", "寿司", "和食", "洋食", "中華", "カレー", "定食", "カフェ", "その他"],
@@ -1827,28 +1863,160 @@
       }
     }));
     $("#reg-comment-text").addEventListener("input", event => { $("#reg-comment-count").textContent = String(event.target.value.length); });
-    $("#store-register-form").addEventListener("submit", event => {
+    const registerForm = $("#store-register-form");
+    const confirmPanel = $("#register-confirm");
+    const confirmList = $("#confirm-list");
+    const confirmFeedback = $("#confirm-feedback");
+    const submitFrame = $("#egalog-submit-frame");
+    let pendingApplication = null;
+    let activeSubmitToken = "";
+
+    function selectedValues(name) {
+      return Array.from(registerForm.querySelectorAll(`[name="${name}"]:checked`))
+        .map(input => input.value);
+    }
+
+    function collectApplication() {
+      const one = name => registerForm.querySelector(`[name="${name}"]:checked`)?.value || "";
+      const value = name => registerForm.querySelector(`[name="${name}"]`)?.value?.trim() || "";
+      return {
+        "店名": value("storeName"),
+        "ジャンル": selectedValues("genre").join("、"),
+        "エリア": one("area"),
+        "雰囲気": selectedValues("mood").join("、"),
+        "人数規模": one("size"),
+        "味評価": one("taste"),
+        "店評価": one("service"),
+        "所在地": value("address"),
+        "URL": value("url"),
+        "営業時間": value("hours"),
+        "定休日": value("closed"),
+        "予算": value("budget"),
+        "個室": one("privateRoom"),
+        "駐車場": one("parking"),
+        "予約": one("reservation"),
+        "貸切": one("charter"),
+        "飲み放題": one("allYouCanDrink"),
+        "喫煙": one("smoking"),
+        "紹介コメント": value("comment"),
+        "紹介者": value("contributor"),
+        "写真URL1": "",
+        "写真URL2": "",
+        "写真URL3": ""
+      };
+    }
+
+    const confirmRows = [
+      ["店名", "店名"], ["ジャンル", "ジャンル"], ["エリア", "エリア"],
+      ["雰囲気", "雰囲気"], ["人数規模", "人数・規模"],
+      ["味評価", "味の評価"], ["店評価", "店の評価"],
+      ["所在地", "所在地・住所"], ["URL", "お店のURL"],
+      ["営業時間", "営業時間"], ["定休日", "定休日"], ["予算", "予算"],
+      ["個室", "個室"], ["駐車場", "駐車場"], ["予約", "予約"],
+      ["貸切", "貸切"], ["飲み放題", "飲み放題"], ["喫煙", "喫煙"],
+      ["紹介コメント", "紹介コメント"], ["紹介者", "登録者"]
+    ];
+
+    function showConfirmation(data) {
+      confirmList.replaceChildren();
+      confirmRows.forEach(([key, label]) => {
+        const row = document.createElement("div");
+        row.className = "confirm-row";
+        const name = document.createElement("div");
+        name.className = "confirm-label";
+        name.textContent = label;
+        const value = document.createElement("div");
+        value.className = "confirm-value";
+        value.textContent = data[key] || "—";
+        row.append(name, value);
+        confirmList.appendChild(row);
+      });
+      registerForm.hidden = true;
+      confirmPanel.hidden = false;
+      confirmFeedback.className = "confirm-feedback";
+      confirmFeedback.textContent = "";
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+
+    function returnToEditing() {
+      confirmPanel.hidden = true;
+      registerForm.hidden = false;
+      $("#register-feedback").classList.remove("show");
+      window.scrollTo({top:0,behavior:"smooth"});
+    }
+
+    registerForm.addEventListener("submit", event => {
       event.preventDefault();
-      const form = event.currentTarget;
       const requiredChecks = [
         ["#reg-name", "店名"], ["#reg-contributor", "登録者"]
       ];
       const missing = requiredChecks.filter(([selector]) => !$(selector).value.trim()).map(([, label]) => label);
       const requiredGroups = [["genre", "ジャンル"], ["area", "エリア"], ["mood", "雰囲気"], ["size", "人数・規模"], ["taste", "味の評価"], ["service", "店の評価"]];
-      requiredGroups.forEach(([name, label]) => { if (!form.querySelector(`[name="${name}"]:checked`)) missing.push(label); });
+      requiredGroups.forEach(([name, label]) => { if (!registerForm.querySelector(`[name="${name}"]:checked`)) missing.push(label); });
       const feedback = $("#register-feedback");
       if (missing.length) {
         feedback.textContent = "必須項目を入力してください：" + missing.join("・");
         feedback.classList.add("show");
         const first = missing[0];
         const card = Array.from($$(".form-card")).find(el => el.textContent.includes(first));
-        if (card) { $$(".form-card-toggle").forEach(btn => { btn.setAttribute("aria-expanded", "false"); $("#" + btn.getAttribute("aria-controls")).classList.remove("open"); }); const btn = $(".form-card-toggle", card); btn.setAttribute("aria-expanded", "true"); $("#" + btn.getAttribute("aria-controls")).classList.add("open"); }
+        if (card) {
+          $$(".form-card-toggle").forEach(btn => { btn.setAttribute("aria-expanded", "false"); $("#" + btn.getAttribute("aria-controls")).classList.remove("open"); });
+          const btn = $(".form-card-toggle", card);
+          btn.setAttribute("aria-expanded", "true");
+          $("#" + btn.getAttribute("aria-controls")).classList.add("open");
+        }
         feedback.scrollIntoView({behavior:"smooth", block:"center"});
         return;
       }
-      feedback.textContent = "入力内容の確認画面・申請送信機能は、次の工程で追加します。現時点ではデータは送信されていません。";
-      feedback.classList.add("show");
-      feedback.scrollIntoView({behavior:"smooth", block:"center"});
+      pendingApplication = collectApplication();
+      showConfirmation(pendingApplication);
+    });
+
+    $("#confirm-edit").addEventListener("click", returnToEditing);
+
+    $("#confirm-send").addEventListener("click", () => {
+      if (!pendingApplication) return;
+      const button = $("#confirm-send");
+      button.disabled = true;
+      button.textContent = "申請を送信しています…";
+      confirmFeedback.className = "confirm-feedback show";
+      confirmFeedback.textContent = "申請データを送信しています。画面を閉じずにお待ちください。";
+      activeSubmitToken = "EG-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+      const postForm = document.createElement("form");
+      postForm.method = "POST";
+      postForm.action = GAS_URL;
+      postForm.target = "egalog-submit-frame";
+      postForm.acceptCharset = "UTF-8";
+      const payload = {...pendingApplication, action:"submit", responseToken:activeSubmitToken};
+      Object.entries(payload).forEach(([key,val]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = String(val ?? "");
+        postForm.appendChild(input);
+      });
+      document.body.appendChild(postForm);
+      postForm.submit();
+      postForm.remove();
+    });
+
+    window.addEventListener("message", event => {
+      const data = event.data;
+      if (!data || data.type !== "egalog-submit-result" || data.token !== activeSubmitToken) return;
+      const button = $("#confirm-send");
+      button.disabled = false;
+      button.textContent = "この内容で申請する →";
+      if (data.result && data.result.success) {
+        confirmFeedback.className = "confirm-feedback show";
+        confirmFeedback.textContent = "申請を受け付けました（申請ID：" + data.result.applicationId + "）。" +
+          (data.result.warning ? "\\n" + data.result.warning : "\\n管理者の確認・承認後にサイトへ掲載されます。");
+        button.hidden = true;
+        $("#confirm-edit").hidden = true;
+        pendingApplication = null;
+      } else {
+        confirmFeedback.className = "confirm-feedback show error";
+        confirmFeedback.textContent = "申請を送信できませんでした：" + ((data.result && data.result.message) || "原因を確認できませんでした。入力内容を確認して再度お試しください。");
+      }
     });
 
     addRegisterChoices("reg-genre", OPTIONS.genre, "genre");

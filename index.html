@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#101e33">
-  <title>えがログ Ver.6.7｜お店を探す</title>
+  <title>えがログ Ver.6.10｜お店を探す</title>
   <style>
     :root {
       --navy: #101e33;
@@ -1274,7 +1274,7 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <span class="footer-brand">えがログ</span>
-      <span class="footer-version">Ver.6.7</span>
+      <span class="footer-version">Ver.6.10</span>
     </div>
   </footer>
 
@@ -1283,7 +1283,7 @@
   <script>
     "use strict";
 
-    // Ver.6.7：登録フォームの選択方式・必須項目・アコーディオン動作を調整。
+    // Ver.6.10：申請完了メッセージの改行と登録フォームのエリア表示を調整。
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwPRUrUK7aFteIdXPaIGkrxpLIrv3TfHwSP2AQmB5oSgzbIj39d6IXkjmiwwYVb73hk/exec";
     const OPTIONS = {
       genre: ["うどん", "ラーメン", "居酒屋", "焼肉", "寿司", "和食", "洋食", "中華", "カレー", "定食", "カフェ", "その他"],
@@ -1829,13 +1829,15 @@
     }
     function addRegisterChoices(containerId, values, name, type = "checkbox") {
       const container = $("#" + containerId);
-      values.forEach((value, index) => {
+      values.forEach((item, index) => {
+        const value = typeof item === "string" ? item : item.value;
+        const displayLabel = typeof item === "string" ? item : item.label;
         const label = document.createElement("label");
         label.className = "form-choice";
         const input = document.createElement("input");
         input.type = type; input.name = name; input.value = value;
         if (type === "radio") input.required = true;
-        const span = document.createElement("span"); span.textContent = value;
+        const span = document.createElement("span"); span.textContent = displayLabel;
         label.append(input, span); container.appendChild(label);
       });
     }
@@ -2009,7 +2011,7 @@
       if (data.result && data.result.success) {
         confirmFeedback.className = "confirm-feedback show";
         confirmFeedback.textContent = "申請を受け付けました（申請ID：" + data.result.applicationId + "）。" +
-          (data.result.warning ? "\\n" + data.result.warning : "\\n管理者の確認・承認後にサイトへ掲載されます。");
+          (data.result.warning ? "\n" + data.result.warning : "\n管理者の確認・承認後にサイトへ掲載されます。");
         button.hidden = true;
         $("#confirm-edit").hidden = true;
         pendingApplication = null;
@@ -2020,7 +2022,10 @@
     });
 
     addRegisterChoices("reg-genre", OPTIONS.genre, "genre");
-    addRegisterChoices("reg-area", [...OPTIONS.areaCity, ...OPTIONS.areaPrefecture.map(x => x.value)], "area", "radio");
+    addRegisterChoices("reg-area", [
+      ...OPTIONS.areaCity.map(value => ({ label: value, value })),
+      ...OPTIONS.areaPrefecture
+    ], "area", "radio");
     addRegisterChoices("reg-mood", OPTIONS.mood, "mood");
     addRegisterChoices("reg-size", OPTIONS.size, "size", "radio");
     addRatingChoices("reg-taste", "taste");

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#101e33">
-  <title>えがログ Ver.6.10｜お店を探す</title>
+  <title>えがログ Ver.6.12｜お店を探す</title>
   <style>
     :root {
       --navy: #101e33;
@@ -1008,6 +1008,10 @@
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
     }
+  
+    .form-photo-preview{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+    .form-photo-preview img{width:92px;height:92px;object-fit:cover;border-radius:8px;border:1px solid var(--line,#d8dde5)}
+    .form-photo-preview .photo-preview-item{font-size:12px;color:var(--muted,#667085)}
   </style>
 </head>
 <body>
@@ -1191,7 +1195,7 @@
           <div class="form-two-col">
             <div class="form-field"><label class="form-label" for="reg-hours">営業時間</label><input class="form-input" id="reg-hours" name="hours" placeholder="例：17:00～23:00"></div>
             <div class="form-field"><label class="form-label" for="reg-closed">定休日</label><input class="form-input" id="reg-closed" name="closed" placeholder="例：日曜日"></div>
-            <div class="form-field"><label class="form-label" for="reg-budget">予算</label><select class="form-select" id="reg-budget" name="budget"><option value="">選択してください</option><option>～1,000円</option><option>1,000～2,000円</option><option>2,000～3,000円</option><option>3,000～5,000円</option><option>5,000～7,000円</option><option>7,000～10,000円</option><option>10,000円～</option><option>不明</option></select></div>
+            <div class="form-field"><label class="form-label" for="reg-budget">予算</label><select class="form-select" id="reg-budget" name="budget"><option value="">選択してください</option></select></div>
           </div>
         </div>
       </section>
@@ -1205,7 +1209,8 @@
       <section class="form-card">
         <button type="button" class="form-card-toggle" aria-expanded="false" aria-controls="reg-photos"><span class="form-card-title"><span class="form-card-number">07</span>写真</span><span class="form-card-meta">任意項目<i class="form-chevron"></i></span></button>
         <div class="form-card-body" id="reg-photos">
-          <div class="form-photo-note">お店の外観・店内・料理など、最大3枚まで掲載できます。<br>写真の登録機能は現在準備中のため、この画面からはまだ追加できません。</div>
+          <div class="form-photo-note">お店の外観・店内・料理など、最大3枚まで掲載できます。<br>写真は自動で縮小・圧縮して申請時に一時保存し、承認後に公開用フォルダへ保存します。</div>
+          <div class="form-field"><label class="form-label" for="reg-photos-input">写真を選択（最大3枚）</label><input class="form-input" id="reg-photos-input" type="file" accept="image/*" multiple><span class="form-help" id="reg-photo-status">長辺最大1600px・JPEG形式・1枚400KB以内を目標に自動調整します。</span><div id="reg-photo-preview" class="form-photo-preview"></div></div>
         </div>
       </section>
       <div class="form-feedback" id="register-feedback" role="alert"></div>
@@ -1274,7 +1279,7 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <span class="footer-brand">えがログ</span>
-      <span class="footer-version">Ver.6.10</span>
+      <span class="footer-version">Ver.6.12</span>
     </div>
   </footer>
 
@@ -1283,30 +1288,12 @@
   <script>
     "use strict";
 
-    // Ver.6.10：申請完了メッセージの改行と登録フォームのエリア表示を調整。
+    // Ver.6.12：選択肢連携・写真申請処理を調整の改行と登録フォームのエリア表示を調整。
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwPRUrUK7aFteIdXPaIGkrxpLIrv3TfHwSP2AQmB5oSgzbIj39d6IXkjmiwwYVb73hk/exec";
-    const OPTIONS = {
-      genre: ["うどん", "ラーメン", "居酒屋", "焼肉", "寿司", "和食", "洋食", "中華", "カレー", "定食", "カフェ", "その他"],
-      areaCity: ["街", "中央区", "北区", "南区", "西区", "東区"],
-      areaPrefecture: [
-        { label: "県北（山鹿・荒尾・玉名）", value: "県北" },
-        { label: "北東部（菊池・菊陽・合志）", value: "北東部" },
-        { label: "阿蘇（阿蘇地域）", value: "阿蘇" },
-        { label: "県南（宇城・宇土・八代）", value: "県南" },
-        { label: "球磨人吉（球磨・人吉）", value: "球磨人吉" },
-        { label: "天草（天草地域）", value: "天草" }
-      ],
-      size: ["1～2人向け", "～5人", "6～10人", "大人数・宴会ok"],
-      conditions: [
-        { title: "個室", options: ["個室あり", "個室なし"] },
-        { title: "駐車場", options: ["駐車場あり", "駐車場なし"] },
-        { title: "予約", options: ["予約可", "予約したほうがいい", "予約不可"] },
-        { title: "貸切", options: ["貸切あり", "貸切なし"] },
-        { title: "飲み放題", options: ["飲み放題あり", "飲み放題なし"] },
-        { title: "喫煙", options: ["喫煙可", "禁煙", "不明"] }
-      ],
-      mood: ["静か", "高級感・おしゃれ", "わいわい", "大衆・家族"]
-    };
+    let OPTIONS = { genre:[], area:[], size:[], mood:[], privateRoom:[], parking:[], reservation:[], charter:[], allYouCanDrink:[], smoking:[], budget:[] };
+    const SEARCH_CATEGORIES = ['genre','area','size','conditions','mood'];
+    const OPTION_LABELS = { genre:'ジャンル', area:'エリア', size:'人数・規模', mood:'雰囲気' };
+    const OPTION_FIELD_MAP = { privateRoom:'個室', parking:'駐車場', reservation:'予約', charter:'貸切', allYouCanDrink:'飲み放題', smoking:'喫煙' };
 
     const selected = {
       genre: new Set(), area: new Set(), size: new Set(),
@@ -1351,18 +1338,23 @@
       container.appendChild(group);
     }
 
+    function optionItems(key) { return Array.isArray(OPTIONS[key]) ? OPTIONS[key] : []; }
     function buildOptions() {
-      addTagGroup($("#tags-genre"), "", OPTIONS.genre);
-      const areaContainer = $("#tags-area");
-      addTagGroup(areaContainer, "熊本市", OPTIONS.areaCity);
-      addTagGroup(areaContainer, "熊本県内", OPTIONS.areaPrefecture.map(item => ({
-        label: item.label, value: item.value, className: "area-tag"
-      })), "tag-grid area-grid");
-      $$("#tags-area .tag-group:first-child .tag").forEach(tag => tag.classList.add("city-tag"));
-      addTagGroup($("#tags-size"), "", OPTIONS.size);
-      const conditionsContainer = $("#tags-conditions");
-      OPTIONS.conditions.forEach(group => addTagGroup(conditionsContainer, group.title, group.options));
-      addTagGroup($("#tags-mood"), "", OPTIONS.mood);
+      const genreItems = optionItems('genre');
+      addTagGroup($('#tags-genre'), '', genreItems);
+      const areaContainer = $('#tags-area');
+      const areaItems = optionItems('area');
+      ['熊本市','熊本県内','県外'].forEach(groupName => {
+        const values = areaItems.filter(x => x.group === groupName);
+        if (values.length) addTagGroup(areaContainer, groupName, values.map(x=>({label:x.label,value:x.value,className:groupName==='熊本市'?'city-tag':'area-tag'})), 'tag-grid area-grid');
+      });
+      addTagGroup($('#tags-size'), '', optionItems('size'));
+      const conditionsContainer = $('#tags-conditions');
+      Object.entries(OPTION_FIELD_MAP).forEach(([key,title])=>{
+        const values = optionItems(key);
+        if(values.length) addTagGroup(conditionsContainer,title,values);
+      });
+      addTagGroup($('#tags-mood'), '', optionItems('mood'));
     }
 
     function toggleTag(button) {
@@ -1439,14 +1431,21 @@
       return Array.from(selectedValues).some(value => actual.includes(value));
     }
 
-    const CONDITION_MAP = {
-      "個室あり": ["個室", "あり"], "個室なし": ["個室", "なし"],
-      "駐車場あり": ["駐車場", "あり"], "駐車場なし": ["駐車場", "なし"],
-      "予約可": ["予約", "可"], "予約したほうがいい": ["予約", "したほうがいい"], "予約不可": ["予約", "不可"],
-      "貸切あり": ["貸切", "あり"], "貸切なし": ["貸切", "なし"],
-      "飲み放題あり": ["飲み放題", "あり"], "飲み放題なし": ["飲み放題", "なし"],
-      "喫煙可": ["喫煙", "喫煙可"], "禁煙": ["喫煙", "禁煙"], "不明": ["喫煙", "不明"]
-    };
+    let CONDITION_MAP = {};
+    function buildConditionMap() {
+      CONDITION_MAP = {};
+      Object.entries(OPTION_FIELD_MAP).forEach(([key, field]) => {
+        optionItems(key).forEach(item => {
+          const raw = String(item.value);
+          let value = raw;
+          if (key === "privateRoom") value = raw.replace(/^個室/, "");
+          if (key === "parking") value = raw.replace(/^駐車場/, "");
+          if (key === "charter") value = raw.replace(/^貸切/, "");
+          if (key === "allYouCanDrink") value = raw.replace(/^飲み放題/, "");
+          CONDITION_MAP[raw] = [field, value];
+        });
+      });
+    }
 
     function matchesConditions(store) {
       const grouped = new Map();
@@ -1855,14 +1854,8 @@
     $("#register-back").addEventListener("click", showSearchPage);
     $$(".form-card-toggle").forEach(button => button.addEventListener("click", () => {
       const open = button.getAttribute("aria-expanded") === "true";
-      $$(".form-card-toggle").forEach(other => {
-        other.setAttribute("aria-expanded", "false");
-        $("#" + other.getAttribute("aria-controls")).classList.remove("open");
-      });
-      if (!open) {
-        button.setAttribute("aria-expanded", "true");
-        $("#" + button.getAttribute("aria-controls")).classList.add("open");
-      }
+      button.setAttribute("aria-expanded", open ? "false" : "true");
+      $("#" + button.getAttribute("aria-controls")).classList.toggle("open", !open);
     }));
     $("#reg-comment-text").addEventListener("input", event => { $("#reg-comment-count").textContent = String(event.target.value.length); });
     const registerForm = $("#store-register-form");
@@ -1877,6 +1870,51 @@
       return Array.from(registerForm.querySelectorAll(`[name="${name}"]:checked`))
         .map(input => input.value);
     }
+
+    let compressedPhotoData = [];
+    async function compressPhoto(file) {
+      if (!file.type.startsWith('image/')) throw new Error('画像ファイルを選択してください。');
+      const image = await createImageBitmap(file);
+      const scale = Math.min(1, 1600 / Math.max(image.width, image.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(image.width * scale));
+      canvas.height = Math.max(1, Math.round(image.height * scale));
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+      image.close && image.close();
+      let quality = 0.86;
+      let blob = await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',quality));
+      while (blob && blob.size > 400*1024 && quality > 0.50) {
+        quality = Math.max(0.50, quality - 0.07);
+        blob = await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',quality));
+      }
+      if (!blob) throw new Error('写真を変換できませんでした。');
+      return await new Promise((resolve,reject)=>{
+        const reader = new FileReader();
+        reader.onload = ()=>resolve(String(reader.result));
+        reader.onerror = ()=>reject(new Error('写真の読み込みに失敗しました。'));
+        reader.readAsDataURL(blob);
+      });
+    }
+    $('#reg-photos-input').addEventListener('change', async event => {
+      const files = Array.from(event.target.files || []);
+      const status = $('#reg-photo-status');
+      const preview = $('#reg-photo-preview');
+      preview.replaceChildren(); compressedPhotoData = [];
+      if (!files.length) { status.textContent='写真は選択されていません。'; return; }
+      if (files.length > 3) { event.target.value=''; status.textContent='写真は最大3枚までです。'; return; }
+      status.textContent='写真を縮小・圧縮しています…';
+      try {
+        for (const file of files) compressedPhotoData.push(await compressPhoto(file));
+        compressedPhotoData.forEach((data,i)=>{
+          const wrap=document.createElement('div'); wrap.className='photo-preview-item';
+          const img=document.createElement('img'); img.src=data; img.alt='選択した写真'+(i+1);
+          const label=document.createElement('div'); label.textContent='写真'+(i+1);
+          wrap.append(img,label); preview.appendChild(wrap);
+        });
+        status.textContent='写真'+files.length+'枚を準備しました。申請送信時に一時保存されます。';
+      } catch(error) { compressedPhotoData=[]; event.target.value=''; status.textContent=error.message; }
+    });
 
     function collectApplication() {
       const one = name => registerForm.querySelector(`[name="${name}"]:checked`)?.value || "";
@@ -1904,7 +1942,10 @@
         "紹介者": value("contributor"),
         "写真URL1": "",
         "写真URL2": "",
-        "写真URL3": ""
+        "写真URL3": "",
+        photoData1: compressedPhotoData[0] || "",
+        photoData2: compressedPhotoData[1] || "",
+        photoData3: compressedPhotoData[2] || ""
       };
     }
 
@@ -2021,26 +2062,36 @@
       }
     });
 
-    addRegisterChoices("reg-genre", OPTIONS.genre, "genre");
-    addRegisterChoices("reg-area", [
-      ...OPTIONS.areaCity.map(value => ({ label: value, value })),
-      ...OPTIONS.areaPrefecture
-    ], "area", "radio");
-    addRegisterChoices("reg-mood", OPTIONS.mood, "mood");
-    addRegisterChoices("reg-size", OPTIONS.size, "size", "radio");
-    addRatingChoices("reg-taste", "taste");
-    addRatingChoices("reg-service", "service");
-    addRegisterChoices("reg-private", ["個室あり", "個室なし"], "privateRoom", "radio");
-    addRegisterChoices("reg-parking", ["駐車場あり", "駐車場なし"], "parking", "radio");
-    addRegisterChoices("reg-reservation", ["予約可", "予約したほうがいい", "予約不可"], "reservation", "radio");
-    addRegisterChoices("reg-charter", ["貸切あり", "貸切なし"], "charter", "radio");
-    addRegisterChoices("reg-drink", ["飲み放題あり", "飲み放題なし"], "allYouCanDrink", "radio");
-    addRegisterChoices("reg-smoking", ["喫煙可", "禁煙", "不明"], "smoking", "radio");
-
-    buildOptions();
-    updateCounts();
-    updateMatchCount();
-    loadStores();
+    async function loadOptionsAndBuild() {
+      try {
+        const response = await fetch(GAS_URL + "?action=options", {cache:"no-store"});
+        const payload = await response.json();
+        if (!payload || payload.success !== true || !payload.options) throw new Error(payload.message || '選択肢を取得できませんでした。');
+        OPTIONS = payload.options;
+        buildConditionMap();
+        buildOptions();
+        addRegisterChoices("reg-genre", optionItems('genre'), "genre");
+        addRegisterChoices("reg-area", optionItems('area'), "area", "radio");
+        addRegisterChoices("reg-mood", optionItems('mood'), "mood");
+        addRegisterChoices("reg-size", optionItems('size'), "size", "radio");
+        addRegisterChoices("reg-private", optionItems('privateRoom'), "privateRoom", "radio");
+        addRegisterChoices("reg-parking", optionItems('parking'), "parking", "radio");
+        addRegisterChoices("reg-reservation", optionItems('reservation'), "reservation", "radio");
+        addRegisterChoices("reg-charter", optionItems('charter'), "charter", "radio");
+        addRegisterChoices("reg-drink", optionItems('allYouCanDrink'), "allYouCanDrink", "radio");
+        addRegisterChoices("reg-smoking", optionItems('smoking'), "smoking", "radio");
+        const budget = $('#reg-budget');
+        optionItems('budget').forEach(item=>{const o=document.createElement('option');o.value=item.value;o.textContent=item.label;budget.appendChild(o);});
+        addRatingChoices("reg-taste", "taste"); addRatingChoices("reg-service", "service");
+        updateCounts(); updateMatchCount();
+      } catch(error) {
+        console.error(error);
+        $('#data-status').textContent='選択肢を読み込めません。管理者に確認してください。';
+        $('#data-status').classList.add('error');
+      }
+    }
+    updateCounts(); updateMatchCount();
+    loadOptionsAndBuild().then(loadStores);
   </script>
 </body>
 </html>

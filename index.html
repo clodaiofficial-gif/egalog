@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Ver.6.14 HTML -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -892,6 +893,14 @@
       .form-submit { width:100%; }
     }
 
+    .filter-guidance {
+      margin: 5px 0 0;
+      color: #8b98aa;
+      font-size: .68rem;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+
     .site-footer {
       color: #d5deea;
       background: var(--navy);
@@ -907,6 +916,23 @@
       align-items: center;
       gap: 12px;
     }
+    .footer-visual-link {
+      grid-column: 1;
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 0;
+      border: 0;
+      background: transparent;
+      color: #d5deea;
+      font: inherit;
+      font-size: .72rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .footer-visual-link:hover { color: #fff; }
+    .footer-visual-link:focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; }
     .footer-brand {
       grid-column: 2;
       justify-self: center;
@@ -1006,7 +1032,10 @@
       .panel-actions { padding: 13px 14px 16px; gap: 8px; }
       .search-button { min-width: 0; flex: 1; padding: 10px 12px; font-size: .82rem; }
       .clear-button { font-size: .73rem; }
-      .footer-inner { width: calc(100% - 28px); min-height: 54px; }
+      .footer-inner { width: calc(100% - 28px); min-height: 54px; gap: 7px; }
+      .footer-visual-link { font-size: .64rem; gap: 4px; }
+      .footer-brand { font-size: .78rem; }
+      .footer-version { font-size: .6rem; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
@@ -1050,6 +1079,7 @@
           <div>
             <h2 class="panel-title" id="filter-title">条件を絞る</h2>
             <div class="panel-kicker">FILTER YOUR SEARCH</div>
+            <p class="filter-guidance">※ 絞り込みたいジャンルを選択してください。選択していないジャンルは、該当するものをすべて表示します。</p>
           </div>
         </div>
         <span class="selected-total" id="selected-total" aria-live="polite">0</span>
@@ -1286,15 +1316,18 @@
     </div>
   </main>
 
-  <div class="photo-viewer" id="photo-viewer" hidden role="dialog" aria-modal="true" aria-label="写真の拡大表示">
+  <div class="photo-viewer" id="photo-viewer" hidden role="dialog" aria-modal="true" aria-label="画像の拡大表示">
     <button type="button" class="photo-viewer-close" id="photo-viewer-close" aria-label="写真を閉じる">×</button>
     <img id="photo-viewer-image" alt="">
   </div>
 
   <footer class="site-footer">
     <div class="footer-inner">
+      <button class="footer-visual-link" id="footer-visual-open" type="button" aria-label="メインビジュアルを表示">
+        <span aria-hidden="true">🖼️</span><span>メインビジュアル</span>
+      </button>
       <span class="footer-brand">えがログ</span>
-      <span class="footer-version">Ver.6.12</span>
+      <span class="footer-version">Ver.6.14</span>
     </div>
   </footer>
 
@@ -1303,7 +1336,7 @@
   <script>
     "use strict";
 
-    // Ver.6.13：予算検索、登録案内・写真案内・確認文言、評価選択肢、アイコンを更新。
+    // Ver.6.14：予算検索の照合改善、検索案内、メインビジュアル表示を更新。
     const GAS_URL = "https://script.google.com/macros/s/AKfycbwPRUrUK7aFteIdXPaIGkrxpLIrv3TfHwSP2AQmB5oSgzbIj39d6IXkjmiwwYVb73hk/exec";
     let OPTIONS = { genre:[], area:[], size:[], mood:[], privateRoom:[], parking:[], reservation:[], charter:[], allYouCanDrink:[], smoking:[], budget:[] };
     const SEARCH_CATEGORIES = ['genre','area','size','budget','conditions','mood'];
@@ -1441,10 +1474,39 @@
       return splitValues(store[key]);
     }
 
+    function normalizeMatchValue(value) {
+      return String(value ?? "")
+        .normalize("NFKC")
+        .replace(/[‐‑‒–—−〜～]/g, "～")
+        .replace(/[\\s　]+/g, "")
+        .trim();
+    }
+
     function includesAny(store, key, selectedValues) {
       if (!selectedValues.size) return true;
       const actual = fieldValues(store, key);
-      return Array.from(selectedValues).some(value => actual.includes(value));
+      if (key === "予算") {
+        const actualNormalized = actual.map(normalizeMatchValue);
+        const selectedOptions = optionItems("budget");
+        return Array.from(selectedValues).some(value => {
+          const selected = normalizeMatchValue(value);
+          const matchedOption = selectedOptions.find(item =>
+            normalizeMatchValue(item.value) === selected ||
+            normalizeMatchValue(item.label) === selected
+          );
+          const candidates = matchedOption
+            ? [matchedOption.value, matchedOption.label, value]
+            : [value];
+          return candidates.some(candidate => {
+            const normalized = normalizeMatchValue(candidate);
+            return actualNormalized.includes(normalized);
+          });
+        });
+      }
+      const actualNormalized = actual.map(normalizeMatchValue);
+      return Array.from(selectedValues).some(value =>
+        actualNormalized.includes(normalizeMatchValue(value))
+      );
     }
 
     let CONDITION_MAP = {};
@@ -1825,6 +1887,15 @@
     $("#detail-close").addEventListener("click", () => closeDetail(false));
     $("#detail-back-bottom").addEventListener("click", () => closeDetail(false));
     $("#photo-viewer-close").addEventListener("click", closePhotoViewer);
+    $("#footer-visual-open").addEventListener("click", () => {
+      const viewer = $("#photo-viewer");
+      const viewerImage = $("#photo-viewer-image");
+      photoViewerReturnFocus = $("#footer-visual-open");
+      viewerImage.alt = "えがログ メインビジュアル";
+      viewerImage.src = "egalog-horizontal.png";
+      viewer.hidden = false;
+      $("#photo-viewer-close").focus();
+    });
     $("#photo-viewer").addEventListener("click", event => {
       if (event.target.id === "photo-viewer") closePhotoViewer();
     });
